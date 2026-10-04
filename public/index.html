@@ -191,11 +191,11 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:10px;bo
 <div class="card"><div class="muted"><span id="itemTypeLabel">الفيلم</span> <span id="roundNo"></span></div><div id="itemTitle" class="title"></div><div id="tags" class="tags"></div><div id="rarity" class="rarity"></div><div class="muted" style="margin-top:7px">⭐ التقييم والقيمة الحقيقية مخفيان</div><div id="turn" class="turn"></div><div id="timer" class="timer">15</div><div id="price" class="price">0 د.ك</div><div class="buttons"><button data-inc="10">+10</button><button data-inc="20">+20</button><button data-inc="50">+50</button><button data-inc="100">+100</button></div><div class="custom"><input id="custom" type="number" min="10" max="500" step="10" placeholder="زيادة 10–500"><button id="customBtn">مزايدة</button></div><div id="specialPanel" class="special-panel">
 <h3>🃏 البطاقات الخاصة</h3>
 <div class="card-actions">
-<button id="cardDouble">⚡ مضاعفة <span id="doubleCount">1</span></button>
+<button id="cardDouble">💰 قرض <span id="doubleCount">1</span></button>
 <button id="cardFreeze">🛑 تجميد <span id="freezeCount">1</span></button>
 <button id="cardReveal">👀 كشف القيمة <span id="revealCount">1</span></button>
 </div>
-<div id="cardHint" class="muted" style="margin-top:7px">لكل لاعب بطاقة واحدة من كل نوع.</div>
+<div id="cardHint" class="muted" style="margin-top:7px">لكل لاعب بطاقة واحدة من كل نوع. 💰 قرض: الدبل مكسب عند الفوز ومخاطرة عند الخسارة.</div>
 </div>
 <button id="worth" class="danger" style="width:100%">يستاهل — انسحب</button></div></div>
 <div class="card"><h2>اللاعبون</h2><div id="players" class="players"></div></div><div class="card"><h2>سجل المشتريات</h2><div id="log" class="log"></div></div>
@@ -406,6 +406,8 @@ function connectSocket(){
  socket.on('joined',d=>{room=d.room;isHost=false;enterRoom(d.state);});
  socket.on('errorMsg',m=>setStatus(m));
  socket.on('cardUsed',d=>setStatus(d?.message||'تم استخدام البطاقة ✓',true));
+ socket.on('loanPenalty',d=>setStatus(d?.message||`💸 خسرت القرض — خُصم ${d?.charged||0} د.ك.`,false));
+ socket.on('loanWon',d=>setStatus(d?.message||`💰 فزت بالقرض — دفعت ${d?.amount||0} د.ك.`,true));
  socket.on('cardRevealResult',d=>{revealedItemId=d?.itemId||null;revealedRating=Number(d?.rating);setStatus(`👀 تم كشف تقييم ${d?.name||'العنصر'}: ${Number.isFinite(revealedRating)?revealedRating.toFixed(1):d?.rating}/10`,true);renderAuction();});
  socket.on('state',s=>{if(s?.film?.id!==revealedItemId){revealedItemId=null;revealedRating=null;}state=s;if(s&&s.phase==='auction')clearInterval(localTimer);renderState();});
  socket.on('roundStarted',d=>{clearInterval(localTimer);show('game');if(state){state.phase='auction';state.turnEndsAt=d.turnEndsAt;renderAuction();}});
