@@ -27,6 +27,8 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:10px;bo
 #dealNext:disabled{opacity:.65;cursor:wait}
 
 .country-mini{display:grid;grid-template-columns:repeat(2,minmax(90px,1fr));gap:4px;margin:8px 0;font-size:12px}.country-mini b{grid-column:1/-1;font-size:16px}.mini button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+.country-flag{object-fit:contain!important;padding:28px;box-sizing:border-box;background:#071b17!important}
 </style>
 <style>
 
@@ -480,14 +482,21 @@ async function loadPoster(img,f){
   };
 }
 function posterHTML(f,cls=''){
-  return `<img class="${cls}" alt="${esc(f.name)}" src="${f.img||posterPlaceholder(f.name)}" onerror="loadPoster(this,${JSON.stringify(f).replace(/</g,'\u003c')})">`;
+  const extra=f.countryCode?' country-flag':'';
+  const src=f.img||posterPlaceholder(f.name);
+  return `<img class="${cls}${extra}" alt="${esc(f.name)}" src="${src}" onerror="loadPoster(this,${JSON.stringify(f).replace(/</g,'\u003c')})">`;
 }
 function renderAuction(){
  const f=state.film;const isCountry=state.category==='countries';$('roundNo').textContent=state.round+' / '+state.rounds;$('itemTitle').textContent=f.name;
  $('tags').innerHTML=`<span class="tag">${f.year}</span><span class="tag">${f.genre}</span>${isCountry?`<span class="tag">${esc(f.region||'دولة')}</span>`:''}`;
  $('rarity').innerHTML=isCountry?'🌍 تقييم الدولة مخفي حتى الشراء':`الندرة: <span class="${f.rarityClass}">${f.rarity}</span>`;
  $('poster').innerHTML=`${posterHTML(f)}<div class="fallback" style="display:none">${esc(f.name)}</div>`;
- const first=$('poster').querySelector('img');loadPoster(first,f);
+ const first=$('poster').querySelector('img');
+ if(isCountry && f.countryCode){
+   first.classList.add('country-flag');
+   first.onerror=()=>{first.onerror=null;first.style.display='none';const fb=$('poster').querySelector('.fallback');if(fb)fb.style.display='flex';};
+   first.src=f.img;
+ }else loadPoster(first,f);
  $('price').textContent=state.phase==='secret'?'مزاد سري':' '+state.highest+' د.ك';
  const ev=state.currentEvent||{name:'جولة عادية',desc:'لا يوجد تأثير خاص.'};
  $('turn').innerHTML=`${state.phase==='secret'?'🔒 مزاد سري — ضع عرضك السري':'دور: '+(state.players[state.current]?.name||'')+(state.players[state.current]?.id===socket.id?' — دورك الآن':' — انتظر دورك')}${state.phase==='auction'&&state.leader>=0?' | أعلى مزايد: '+state.players[state.leader].name+' — '+state.highest+' د.ك':''}`;
@@ -540,9 +549,9 @@ function renderSelection(){
   if(p&&!p.selectedFilmId){
     $('selectionMovies').innerHTML=p.films.map((f,i)=>{
       const details=isCountry?`<div class="country-mini"><span>💰 ${f.economy}</span><span>✈️ ${f.tourism}</span><span>🛡️ ${f.safety}</span><span>🏗️ ${f.infrastructure}</span><span>🏥 ${f.qualityOfLife}</span><span>🏛️ ${f.culture}</span><span>🌳 ${f.nature}</span><span>🎭 ${f.entertainment}</span><b>⭐ ${f.totalScore}/100</b></div>`:`⭐ ${f.rating}/10`;
-      return `<div class="mini"><img alt="${esc(f.name)}" src="${f.img||posterPlaceholder(f.name)}"><div><b>${esc(f.name)}</b><br>${details}<br><span class="muted">اشتريته بـ ${f.price} د.ك</span><button type="button" class="pick-btn" data-pick="${i}" ${myTurn?'':'disabled'}>اختيار هذا العنصر</button></div></div>`;
+      return `<div class="mini"><img class="${f.countryCode?'country-flag':''}" alt="${esc(f.name)}" src="${f.img||posterPlaceholder(f.name)}"><div><b>${esc(f.name)}</b><br>${details}<br><span class="muted">اشتريته بـ ${f.price} د.ك</span><button type="button" class="pick-btn" data-pick="${i}" ${myTurn?'':'disabled'}>اختيار هذا العنصر</button></div></div>`;
     }).join('');
-    p.films.forEach((f,i)=>{const img=$('selectionMovies').querySelectorAll('img')[i];if(img)loadPoster(img,f);});
+    p.films.forEach((f,i)=>{const img=$('selectionMovies').querySelectorAll('img')[i];if(img){if(f.countryCode){img.classList.add('country-flag');}else loadPoster(img,f);}});
     document.querySelectorAll('[data-pick]').forEach(b=>{
       b.onclick=async()=>{
         if(b.disabled)return;
@@ -574,7 +583,7 @@ function renderFinal(){saveFinalResults();renderSavedResults();
 const ranked=state.finalRanked||[];
 $('battleCards').innerHTML=ranked.map((x,i)=>`
 <div class="battle-card">
-  <img class="battle-poster" alt="${esc(x.film.name)}" src="${x.film.img||posterPlaceholder(x.film.name)}">
+  <img class="battle-poster ${x.film.countryCode?'country-flag':''}" alt="${esc(x.film.name)}" src="${x.film.img||posterPlaceholder(x.film.name)}">
   <div class="battle-fallback" style="display:none">${esc(x.film.name)}</div>
   <div class="battle-body">
     <h2>${i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':''}${esc(x.player)}</h2>
@@ -590,7 +599,7 @@ ranked.forEach((x,i)=>{
   const img=$('battleCards').querySelectorAll('.battle-poster')[i];
   if(img){
     img.style.display='block';
-    loadPoster(img,x.film);
+    if(x.film.countryCode){img.classList.add('country-flag');}else loadPoster(img,x.film);
   }
 });
 
