@@ -488,12 +488,12 @@ const countryCodes = {
 countries.forEach(c=>{ const code=(c.countryCode||countryCodes[c.name]||'').toLowerCase(); if(code){ c.countryCode=code; c.img=`https://flagcdn.io/flags/4x3/${code}.svg`; } });
 
 const rooms=new Map(); function code(){let s;do{s='MZ'+Math.floor(1000+Math.random()*9000)}while(rooms.has(s));return s}
-function pub(r){let current=null;if(r.film){current={...r.film,value:undefined};if(r.category==='countries'){for(const k of ['economy','tourism','safety','infrastructure','qualityOfLife','culture','nature','entertainment','totalScore'])delete current[k];} }return {phase:r.phase,category:r.category,players:r.players.map(p=>({id:p.id,userId:p.userId,name:p.name,balance:p.balance,spent:p.spent,films:p.films,active:p.active,selectedFilmId:p.selectedFilmId})),round:r.round,rounds:r.rounds,film:current,highest:r.highest,leader:r.leader,current:r.current,turnEndsAt:r.turnEndsAt,history:r.history,selectionTurnId:r.selectionTurnId,selectionTurnUserId:r.selectionTurnUserId,finalRanked:r.finalRanked,finalHistory:r.finalHistory||[]}};
+function pub(r){let current=null;if(r.film){current={...r.film,value:undefined};delete current.rating;if(r.category==='countries'){for(const k of ['economy','tourism','safety','infrastructure','qualityOfLife','culture','nature','entertainment','totalScore'])delete current[k];}}return {phase:r.phase,category:r.category,players:r.players.map(p=>({id:p.id,userId:p.userId,name:p.name,balance:p.balance,spent:p.spent,films:p.films,active:p.active,selectedFilmId:p.selectedFilmId,cards:p.cards||{double:1,freeze:1,reveal:1},frozenUntil:p.frozenUntil||0,doubleNext:!!p.doubleNext})),round:r.round,rounds:r.rounds,film:current,highest:r.highest,leader:r.leader,current:r.current,turnEndsAt:r.turnEndsAt,history:r.history,selectionTurnId:r.selectionTurnId,selectionTurnUserId:r.selectionTurnUserId,finalRanked:r.finalRanked,finalHistory:r.finalHistory||[]}};
 function broadcast(r){io.to(r.room).emit('state',pub(r));}
 function getR(s){return rooms.get(s.room)}
-function startAuction(r){if(r.round>=r.rounds){r.phase='selection';const firstPicker=r.players.find(p=>p.films.length);r.selectionTurnId=firstPicker?.id||null;r.selectionTurnUserId=firstPicker?.userId||null;r.players.forEach(p=>p.selectedFilmId=null);broadcast(r);return}const f={...r.pool[r.round++]};f.value=Math.max(30,Math.round(f.baseValue*(0.82+Math.random()*0.36)/10)*10);r.film=f;r.highest=0;r.leader=-1;r.players.forEach(p=>p.active=true);r.current=0;r.turnEndsAt=Date.now()+15000;broadcast(r);setTimeout(()=>turnTimeout(r.room),15050)}
-function nextActive(r,from){for(let k=1;k<=r.players.length;k++){const i=(from+k)%r.players.length;if(r.players[i].active&&i!==r.leader)return i}return -1}
-function turnTimeout(room){const r=rooms.get(room);if(!r||r.phase!=='auction'||Date.now()<r.turnEndsAt-100)return;if(r.leader===r.current||!r.players[r.current].active)return actionWithdraw(r,r.players[r.current].id);actionWithdraw(r,r.players[r.current].id)}
+function startAuction(r){if(r.round>=r.rounds){r.phase='selection';const firstPicker=r.players.find(p=>p.films.length);r.selectionTurnId=firstPicker?.id||null;r.selectionTurnUserId=firstPicker?.userId||null;r.players.forEach(p=>p.selectedFilmId=null);broadcast(r);return}const f={...r.pool[r.round++]};f.value=Math.max(30,Math.round(f.baseValue*(0.82+Math.random()*0.36)/10)*10);r.film=f;r.highest=0;r.leader=-1;r.players.forEach(p=>{p.active=true;p.frozenUntil=0;p.doubleNext=false;});r.current=0;r.turnEndsAt=Date.now()+15000;broadcast(r);setTimeout(()=>turnTimeout(r.room),15050)}
+function nextActive(r,from){for(let k=1;k<=r.players.length;k++){const i=(from+k)%r.players.length;const p=r.players[i];if(p.active&&i!==r.leader)return i}return -1}
+function turnTimeout(room){const r=rooms.get(room);if(!r||r.phase!=='auction'||Date.now()<r.turnEndsAt-100)return;const p=r.players[r.current];if(!p)return;if(p.frozenUntil&&p.frozenUntil>Date.now()){setTimeout(()=>turnTimeout(room),Math.max(250,p.frozenUntil-Date.now()+50));return;}actionWithdraw(r,p.id)}
 function restartTimer(r){r.turnEndsAt=Date.now()+15000;const room=r.room;setTimeout(()=>turnTimeout(room),15050);}
 function actionWithdraw(r,id){const i=r.players.findIndex(p=>p.id===id);if(i<0||r.phase!=='auction'||i!==r.current||i===r.leader||!r.players[i].active)return;r.players[i].active=false;const others=r.players.filter((p,j)=>p.active&&j!==r.leader).length;if(others===0){if(r.leader>=0)sell(r);else noSale(r);return}r.current=nextActive(r,i);if(r.current<0){if(r.leader>=0)sell(r);else noSale(r);return}restartTimer(r);broadcast(r)}
 function sell(r){const p=r.players[r.leader],paid=r.highest;const saving=r.film.value-paid;p.balance-=paid;p.spent+=paid;p.films.push({...r.film,price:paid,saving});r.history.push({film:r.film.name,player:p.name,price:paid});r.phase='auction';startAuction(r)}
@@ -574,9 +574,9 @@ app.post('/api/game/select-film',async(req,res)=>{
 io.use(async(socket,next)=>{
   try{if(!supabase)return next(new Error('accounts_not_configured'));const token=parseCookies(socket.handshake.headers.cookie||'').mazad_session;if(!token)return next(new Error('login_required'));const {data,error}=await supabase.from('sessions').select('user_id,expires_at,users(id,username)').eq('token_hash',tokenHash(token)).maybeSingle();if(error||!data||new Date(data.expires_at)<=new Date())return next(new Error('login_required'));const u=Array.isArray(data.users)?data.users[0]:data.users;if(!u?.id)return next(new Error('login_required'));socket.user=u;next();}catch(e){next(new Error('auth_failed'));}
 });
-io.on('connection',socket=>{socket.on('createRoom',d=>{const category=['films','celebrities','countries'].includes(d.category)?d.category:'films';const source=category==='celebrities'?celebrities:(category==='countries'?countries:films);const r={room:code(),phase:'lobby',category,hostId:socket.id,budget:Math.max(20,+d.budget||500),playerCount:Math.min(6,Math.max(2,+d.playerCount||4)),rounds:Math.min(source.length,Math.min(100,Math.max(2,Math.floor(+d.rounds||8)))),players:[{id:socket.id,userId:socket.user.id,name:socket.user.username,balance:0,spent:0,films:[],active:true}],pool:[],round:0,history:[],gameId:crypto.randomUUID(),resultsSaved:false};r.players[0].balance=r.budget;rooms.set(r.room,r);socket.join(r.room);socket.emit('roomCreated',{room:r.room,state:pub(r)})});
+io.on('connection',socket=>{socket.on('createRoom',d=>{const category=['films','celebrities','countries'].includes(d.category)?d.category:'films';const source=category==='celebrities'?celebrities:(category==='countries'?countries:films);const r={room:code(),phase:'lobby',category,hostId:socket.id,budget:Math.max(20,+d.budget||500),playerCount:Math.min(6,Math.max(2,+d.playerCount||4)),rounds:Math.min(source.length,Math.min(100,Math.max(2,Math.floor(+d.rounds||8)))),players:[{id:socket.id,userId:socket.user.id,name:socket.user.username,balance:0,spent:0,films:[],active:true,cards:{double:1,freeze:1,reveal:1},frozenUntil:0,doubleNext:false}],pool:[],round:0,history:[],gameId:crypto.randomUUID(),resultsSaved:false};r.players[0].balance=r.budget;rooms.set(r.room,r);socket.join(r.room);socket.emit('roomCreated',{room:r.room,state:pub(r)})});
 socket.on('requestState',d=>{const r=getR(d);if(r)socket.emit('state',pub(r));});
-socket.on('joinRoom',d=>{const r=rooms.get(String(d.room||'').toUpperCase());if(!r)return socket.emit('errorMsg','الغرفة غير موجودة.');if(r.phase!=='lobby')return socket.emit('errorMsg','اللعبة بدأت بالفعل.');if(r.players.length>=r.playerCount)return socket.emit('errorMsg','الغرفة ممتلئة.');if(r.players.some(p=>String(p.userId)===String(socket.user.id)))return socket.emit('errorMsg','هذا الحساب موجود بالفعل في الغرفة. استخدم حسابًا مختلفًا لكل لاعب.');r.players.push({id:socket.id,userId:socket.user.id,name:socket.user.username,balance:r.budget,spent:0,films:[],active:true});socket.join(r.room);socket.emit('joined',{room:r.room,state:pub(r)});broadcast(r)});
+socket.on('joinRoom',d=>{const r=rooms.get(String(d.room||'').toUpperCase());if(!r)return socket.emit('errorMsg','الغرفة غير موجودة.');if(r.phase!=='lobby')return socket.emit('errorMsg','اللعبة بدأت بالفعل.');if(r.players.length>=r.playerCount)return socket.emit('errorMsg','الغرفة ممتلئة.');if(r.players.some(p=>String(p.userId)===String(socket.user.id)))return socket.emit('errorMsg','هذا الحساب موجود بالفعل في الغرفة. استخدم حسابًا مختلفًا لكل لاعب.');r.players.push({id:socket.id,userId:socket.user.id,name:socket.user.username,balance:r.budget,spent:0,films:[],active:true,cards:{double:1,freeze:1,reveal:1},frozenUntil:0,doubleNext:false});socket.join(r.room);socket.emit('joined',{room:r.room,state:pub(r)});broadcast(r)});
 socket.on('startGame',d=>{const r=getR(d);if(!r||socket.id!==r.hostId||r.phase!=='lobby')return;if(r.players.length<2)return socket.emit('errorMsg','يجب دخول لاعبين على الأقل.');const source=r.category==='celebrities'?celebrities:(r.category==='countries'?countries:films);r.pool=source.slice().sort(()=>Math.random()-.5).slice(0,r.rounds);r.phase='auction';r.round=0;startAuction(r)});
 socket.on('bid',d=>{
   try{
@@ -589,16 +589,53 @@ socket.on('bid',d=>{
     if(String(current.userId)!==String(socket.user.id)) return socket.emit('errorMsg','ليس دورك الآن — انتظر حتى يظهر دورك.');
     if(r.current===r.leader) return socket.emit('errorMsg','أنت أعلى مزايد حاليًا ولا يمكنك المزايدة على نفسك.');
     if(!current.active) return socket.emit('errorMsg','لقد انسحبت من هذه الجولة.');
+    if(current.frozenUntil&&current.frozenUntil>Date.now()) return socket.emit('errorMsg',`أنت مجمّد حتى ${Math.ceil((current.frozenUntil-Date.now())/1000)} ثوانٍ.`);
     const v=Number(d?.value);
     if(!Number.isInteger(v)||v<10||v>500||v%10!==0) return socket.emit('errorMsg','المزايدة يجب أن تكون من 10 إلى 500 وبمضاعفات 10.');
-    const np=r.highest+v;
+    const effectiveV=current.doubleNext?v*2:v;
+    const np=r.highest+effectiveV;
     if(np>current.balance) return socket.emit('errorMsg',`رصيدك لا يكفي. المطلوب ${np} د.ك، ورصيدك ${current.balance} د.ك.`);
     r.leader=r.current;
     r.highest=np;
+    current.doubleNext=false;
     r.current=nextActive(r,r.current);
     socket.emit('bidAccepted',{amount:np});
     if(r.current<0) sell(r); else { restartTimer(r); broadcast(r); }
   }catch(e){console.error('bid handler failed',e);socket.emit('errorMsg','حدث خطأ أثناء المزايدة. حاول مرة أخرى.');}
+});
+socket.on('useCard',(d,ack)=>{
+  const reply=(x)=>{try{if(typeof ack==='function')ack(x)}catch(e){}};
+  try{
+    const r=getR(d); if(!r)return reply({ok:false,error:'الغرفة غير موجودة.'});
+    if(r.phase!=='auction')return reply({ok:false,error:'البطاقات تعمل أثناء المزاد فقط.'});
+    const p=r.players.find(x=>String(x.userId)===String(socket.user?.id));
+    if(!p)return reply({ok:false,error:'لم يتم العثور على لاعبك في الغرفة.'});
+    p.cards=p.cards||{double:1,freeze:1,reveal:1};
+    const type=String(d?.type||'');
+    if(!['double','freeze','reveal'].includes(type))return reply({ok:false,error:'بطاقة غير معروفة.'});
+    if(Number(p.cards[type]||0)<=0)return reply({ok:false,error:'لا تملك هذه البطاقة.'});
+    if(type==='double'){
+      if(p.doubleNext)return reply({ok:false,error:'بطاقة المضاعفة مفعّلة بالفعل.'});
+      p.cards.double--;p.doubleNext=true;
+      broadcast(r);socket.emit('cardUsed',{type,message:'⚡ المزايدة القادمة لك ستتضاعف.'});return reply({ok:true});
+    }
+    if(type==='reveal'){
+      if(!r.film)return reply({ok:false,error:'لا يوجد عنصر حالي.'});
+      p.cards.reveal--;
+      const rating=Number(r.film.rating);
+      broadcast(r);
+      socket.emit('cardRevealResult',{itemId:r.film.id,name:r.film.name,rating,category:r.category});
+      return reply({ok:true,rating});
+    }
+    const targetIndex=Number(d?.target);
+    if(!Number.isInteger(targetIndex)||targetIndex<0||targetIndex>=r.players.length)return reply({ok:false,error:'اختر لاعبًا صحيحًا.'});
+    const target=r.players[targetIndex];
+    if(!target||target.userId===p.userId||!target.active)return reply({ok:false,error:'لا يمكنك تجميد هذا اللاعب.'});
+    if(targetIndex===r.leader)return reply({ok:false,error:'أعلى مزايد لا يحتاج إلى تجميد.'});
+    p.cards.freeze--;target.frozenUntil=Date.now()+10000;
+    broadcast(r);socket.emit('cardUsed',{type,message:`🛑 تم تجميد ${target.name} لمدة 10 ثوانٍ.`});
+    return reply({ok:true});
+  }catch(e){console.error('useCard handler failed',e);socket.emit('errorMsg','تعذر استخدام البطاقة.');return reply({ok:false,error:'تعذر استخدام البطاقة.'});}
 });
 socket.on('withdraw',d=>{const r=getR(d);if(!r)return socket.emit('errorMsg','الغرفة غير موجودة.');const p=r.players.find(x=>x.userId===socket.user?.id);if(!p)return socket.emit('errorMsg','لم يتم العثور على لاعبك في هذه الغرفة.');actionWithdraw(r,p.id)});
 socket.on('selectFilm',(d,ack)=>{
