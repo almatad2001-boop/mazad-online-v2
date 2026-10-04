@@ -1,15 +1,9 @@
 {
-  "name": "mazad-online-v2",
-  "version": "2.0.0",
-  "private": true,
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^5.1.0",
-    "socket.io": "^4.8.1",
-    "@supabase/supabase-js": "^2.57.4",
-    "bcryptjs": "^3.0.2"
-  }
+  "name":"malik-almamlaka-pro",
+  "version":"2.0.0",
+  "private":true,
+  "description":"Malik Al Mamlaka - online multiplayer strategy game",
+  "main":"server.js",
+  "scripts":{"start":"node server.js"},
+  "dependencies":{"express":"^4.21.2","socket.io":"^4.8.1"}
 }
