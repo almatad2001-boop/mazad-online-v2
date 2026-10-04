@@ -1,697 +1,179 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مزاد</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#eee9df;color:#252622;font-family:Arial,Tahoma,sans-serif}.app{max-width:1120px;margin:auto;padding:22px 18px 60px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.logo{font-size:38px;font-weight:900}.badge{background:#dbe7e8;padding:8px 14px;border-radius:30px}
-.card{background:#fbf8f1;border:1px solid #ddd5c8;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 8px 25px #00000009}h1,h2,h3{margin:0 0 10px}.muted{color:#777}
-.row{display:flex;gap:12px;flex-wrap:wrap}.field{flex:1;min-width:190px}label{display:block;font-weight:bold;margin:8px 0}input,select{width:100%;padding:13px;border:1px solid #d5cec2;border-radius:13px;font:inherit;background:#fff}
-button{border:0;border-radius:13px;padding:12px 16px;background:#416b73;color:#fff;font-weight:bold;font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.35}.danger{background:#a94d43}.secondary{background:#ddd8cf;color:#252622}
-.auction{display:grid;grid-template-columns:350px 1fr;gap:18px}.poster{aspect-ratio:2/3;border-radius:20px;overflow:hidden;background:#293031;position:relative}.poster img{width:100%;height:100%;object-fit:cover}.fallback{display:flex;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;color:#fff;font-size:32px;font-weight:bold;padding:20px;background:#455f63}
-.title{font-size:38px;font-weight:900}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.tag{background:#e7e1d6;padding:7px 10px;border-radius:20px}.rating{font-size:22px;font-weight:bold}.timer{text-align:center;font-size:52px;font-weight:900}.price{text-align:center;font-size:42px;font-weight:900;color:#416b73}.turn{background:#dbe7e8;padding:13px;border-radius:15px;text-align:center;font-weight:bold;margin:12px 0}
-.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.custom{display:flex;gap:8px;margin:10px 0}.custom input{flex:1}.players{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.player{padding:13px;background:#fff;border:1px solid #ddd5c8;border-radius:16px}.player.turn{border:2px solid #416b73}.player.leader{border:2px solid #357a55}.player.out{opacity:.5}.status{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:20px;font-size:12px}.in{background:#e2f0e7;color:#357a55}.lead{background:#e2f0e7;color:#357a55}.out{background:#f5dfdc;color:#a94d43}
-.rarity{font-weight:900}.common{color:#777}.special{color:#416b73}.rare{color:#a86c24}.legendary{color:#9a6a13}
-.log{max-height:220px;overflow:auto}.logrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid #ddd5c8}
-
-.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.stat{padding:16px;background:#fff;border:1px solid #ddd5c8;border-radius:17px}.stat b{display:block;font-size:24px;margin-top:5px}
-.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.award{background:#fff;border:1px solid #ddd5c8;border-radius:18px;padding:16px}.award .emoji{font-size:30px}.analysis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.metric{background:#fff;border:1px solid #ddd5c8;border-radius:16px;padding:14px}.metric b{font-size:23px;display:block;margin-top:4px}
-table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:10px;border-bottom:1px solid #ddd5c8}.collection{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}.mini{background:#fff;border:1px solid #ddd5c8;border-radius:14px;overflow:hidden}.mini img{width:100%;aspect-ratio:2/3;object-fit:cover}.mini div{padding:8px}.stars{color:#b18a42}.hidden{display:none!important}
-.room-code{font-size:42px;letter-spacing:7px;font-weight:900;text-align:center;background:#eee9df;border:2px dashed #416b73;border-radius:18px;padding:18px;margin:14px 0;direction:ltr}.copyrow{display:flex;gap:8px;align-items:stretch}.copyrow button{min-width:130px}.copyok{color:#357a55;font-weight:bold;min-height:22px}.battle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.battle-card{background:#fff;border:1px solid #ddd5c8;border-radius:20px;overflow:hidden}.battle-card img{width:100%;aspect-ratio:2/3;object-fit:cover}}.battle-fallback{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-size:30px;font-weight:900;color:var(--gold);background:rgba(7,27,23,.95)}.battle-body{padding:15px}.scoreline{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee5d9}.total-score{font-size:30px;font-weight:900;color:#416b73;margin-top:10px}.champion{background:#e2f0e7;border:2px solid #357a55;border-radius:20px;padding:22px;text-align:center;font-size:28px;font-weight:900}.pick-btn{width:100%;margin-top:8px}.selected{outline:3px solid #416b73}.formula{background:#eee9df;border-radius:14px;padding:13px;margin-top:12px}.final-table{margin-top:16px;overflow:auto}.final-table table{min-width:650px}@media(max-width:800px){.auction{grid-template-columns:1fr}.poster{max-width:290px;margin:auto}.buttons{grid-template-columns:repeat(2,1fr)}}
-
-/* Fair-play + simpler final screen */
-#auctionAwards .award{min-height:130px;display:flex;flex-direction:column;justify-content:center}
-#auctionAwards .award strong{font-size:20px;color:#f0d98b}
-#auctionAwards .award small{color:#b9b5aa;margin-top:7px}
-#dealNext:disabled{opacity:.65;cursor:wait}
-
-.country-mini{display:grid;grid-template-columns:repeat(2,minmax(90px,1fr));gap:4px;margin:8px 0;font-size:12px}.country-mini b{grid-column:1/-1;font-size:16px}.mini button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-
-.country-flag{object-fit:contain!important;padding:28px;box-sizing:border-box;background:#071b17!important}
-</style>
-<style>
-
-/* ===== MAZAD CINEMATIC THEME ===== */
-:root{
-  --gold:#d8b45a; --gold2:#f0d98b; --green:#071b17; --green2:#0d3028;
-  --panel:rgba(12,31,27,.88); --line:rgba(216,180,90,.28); --text:#f7f2e7;
-}
-html,body{min-height:100%;background:#020907!important;color:var(--text)!important}
-body{
-  font-family:Arial,Tahoma,sans-serif!important;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(216,180,90,.20),transparent 32%),
-    radial-gradient(circle at 0% 35%,rgba(15,91,67,.22),transparent 30%),
-    radial-gradient(circle at 100% 60%,rgba(15,91,67,.18),transparent 28%),
-    linear-gradient(135deg,#020907,#071b17 48%,#020907)!important;
-  overflow-x:hidden;
-}
-body:before{
-  content:"";position:fixed;inset:-30%;pointer-events:none;z-index:-1;
-  background:conic-gradient(from 225deg at 50% 0%,transparent 0deg,rgba(240,217,139,.07) 25deg,transparent 48deg,transparent 360deg);
-  animation:mazadLight 10s ease-in-out infinite alternate;
-}
-@keyframes mazadLight{to{transform:rotate(7deg) scale(1.08);opacity:.7}}
-.app,.wrap{max-width:1180px!important}
-.top{border-bottom:1px solid var(--line);padding-bottom:14px}
-.logo,h1,h2,h3,.title{color:#fff!important;text-shadow:0 0 18px rgba(216,180,90,.12)}
-.logo{letter-spacing:1px}
-.badge,.tag,.turn,.formula,.dealvalue{
-  background:linear-gradient(135deg,rgba(216,180,90,.14),rgba(255,255,255,.035))!important;
-  border:1px solid var(--line)!important;color:#f5e8bd!important;
-}
-.card{
-  background:linear-gradient(145deg,rgba(11,37,31,.94),rgba(4,19,16,.91))!important;
-  border:1px solid var(--line)!important;
-  box-shadow:0 18px 55px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.035)!important;
-  backdrop-filter:blur(12px);
-}
-.muted{color:#b9b5aa!important}
-input,select{
-  background:#071914!important;color:#fff!important;border-color:rgba(216,180,90,.25)!important;
-}
-button{
-  background:linear-gradient(135deg,#b58b35,#e0c06b)!important;color:#10130f!important;
-  box-shadow:0 6px 18px rgba(216,180,90,.16);
-  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
-}
-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 10px 28px rgba(216,180,90,.25)}
-button:active:not(:disabled){transform:translateY(1px)}
-button.danger{background:linear-gradient(135deg,#7e2929,#b64d42)!important;color:#fff!important}
-button.secondary{background:#26352f!important;color:#eee!important}
-.auction{align-items:stretch}
-.poster{
-  box-shadow:0 25px 55px rgba(0,0,0,.55),0 0 0 1px rgba(216,180,90,.25);
-  transform:perspective(900px) rotateY(-1.5deg);
-  transition:transform .45s ease,box-shadow .45s ease;
-}
-.poster:hover{transform:perspective(900px) rotateY(1.5deg) translateY(-3px);box-shadow:0 30px 70px rgba(0,0,0,.65),0 0 35px rgba(216,180,90,.12)}
-.poster:after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,.10) 48%,transparent 62%);
-  transform:translateX(-120%);animation:posterShine 7s ease-in-out infinite;
-}
-@keyframes posterShine{55%,100%{transform:translateX(120%)}}
-.fallback{background:linear-gradient(145deg,#0d3028,#06130f)!important;color:#f3dda2!important}
-.title{font-size:42px!important}
-.rating,.price{color:var(--gold2)!important}
-.timer{
-  color:#fff!important;font-size:58px!important;
-  text-shadow:0 0 20px rgba(240,217,139,.42);
-  animation:timerPulse 1s ease-in-out infinite alternate;
-}
-@keyframes timerPulse{to{transform:scale(1.035);text-shadow:0 0 32px rgba(240,217,139,.72)}}
-.price{font-size:46px!important;text-shadow:0 0 18px rgba(216,180,90,.18)}
-.player,.stat,.award,.metric,.mini,.battle-card{
-  background:rgba(7,25,21,.88)!important;border-color:rgba(216,180,90,.18)!important;color:#eee!important;
-}
-.player.turn{border-color:#d8b45a!important;box-shadow:0 0 22px rgba(216,180,90,.10)}
-.player.leader{border-color:#4caf7d!important}
-.room-code{
-  background:rgba(216,180,90,.07)!important;border-color:var(--gold)!important;color:#f3dda2!important;
-}
-.champion{
-  background:linear-gradient(135deg,rgba(216,180,90,.16),rgba(9,45,36,.85))!important;
-  border-color:var(--gold)!important;color:#fff!important;
-  box-shadow:0 0 35px rgba(216,180,90,.12);
-}
-.total-score{color:var(--gold2)!important}
-.selected{outline-color:var(--gold)!important}
-#log{scrollbar-color:#a88339 #071914}
-hr{border-color:rgba(216,180,90,.16)!important}
-@media(max-width:800px){
-  .title{font-size:30px!important}.timer{font-size:48px!important}.price{font-size:36px!important}
-  .poster{transform:none!important}.card{padding:16px!important;border-radius:18px!important}
-}
-/* subtle film grain */
-body:after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
-}
-
-</style>
-</head>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#eee9df;color:#252622;font-family:Arial,Tahoma,sans-serif}.app{max-width:1120px;margin:auto;padding:22px 18px 60px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.logo{font-size:38px;font-weight:900}.badge{background:#dbe7e8;padding:8px 14px;border-radius:30px}
-.card{background:#fbf8f1;border:1px solid #ddd5c8;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 8px 25px #00000009}h1,h2,h3{margin:0 0 10px}.muted{color:#777}
-.row{display:flex;gap:12px;flex-wrap:wrap}.field{flex:1;min-width:190px}label{display:block;font-weight:bold;margin:8px 0}input,select{width:100%;padding:13px;border:1px solid #d5cec2;border-radius:13px;font:inherit;background:#fff}
-button{border:0;border-radius:13px;padding:12px 16px;background:#416b73;color:#fff;font-weight:bold;font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.35}.danger{background:#a94d43}.secondary{background:#ddd8cf;color:#252622}
-.auction{display:grid;grid-template-columns:350px 1fr;gap:18px}.poster{aspect-ratio:2/3;border-radius:20px;overflow:hidden;background:#293031;position:relative}.poster img{width:100%;height:100%;object-fit:cover}.fallback{display:flex;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;color:#fff;font-size:32px;font-weight:bold;padding:20px;background:#455f63}
-.title{font-size:38px;font-weight:900}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.tag{background:#e7e1d6;padding:7px 10px;border-radius:20px}.rating{font-size:22px;font-weight:bold}.timer{text-align:center;font-size:52px;font-weight:900}.price{text-align:center;font-size:42px;font-weight:900;color:#416b73}.turn{background:#dbe7e8;padding:13px;border-radius:15px;text-align:center;font-weight:bold;margin:12px 0}
-.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.custom{display:flex;gap:8px;margin:10px 0}.custom input{flex:1}.players{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.player{padding:13px;background:#fff;border:1px solid #ddd5c8;border-radius:16px}.player.turn{border:2px solid #416b73}.player.leader{border:2px solid #357a55}.player.out{opacity:.5}.status{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:20px;font-size:12px}.in{background:#e2f0e7;color:#357a55}.lead{background:#e2f0e7;color:#357a55}.out{background:#f5dfdc;color:#a94d43}
-.rarity{font-weight:900}.common{color:#777}.special{color:#416b73}.rare{color:#a86c24}.legendary{color:#9a6a13}
-.log{max-height:220px;overflow:auto}.logrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid #ddd5c8}
-#dealOverlay{position:fixed;inset:0;background:#182021aa;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}.dealbox{width:min(650px,100%);background:#fbf8f1;border-radius:25px;padding:25px;text-align:center}.dealname{font-size:29px;font-weight:900}.dealprice{font-size:40px;color:#416b73;font-weight:900}.dealvalue{background:#eee9df;padding:13px;border-radius:14px;margin:12px 0}.verdict{padding:13px;border-radius:14px;font-size:23px;font-weight:900;margin:12px 0}.excellent{background:#e2f0e7;color:#357a55}.good{background:#e4eeee;color:#416b73}.win{background:#edf0e8;color:#667443}.bad{background:#f5e8d5;color:#a86c24}.terrible{background:#f5dfdc;color:#a94d43}
-.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.stat{padding:16px;background:#fff;border:1px solid #ddd5c8;border-radius:17px}.stat b{display:block;font-size:24px;margin-top:5px}
-.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.award{background:#fff;border:1px solid #ddd5c8;border-radius:18px;padding:16px}.award .emoji{font-size:30px}.analysis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.metric{background:#fff;border:1px solid #ddd5c8;border-radius:16px;padding:14px}.metric b{font-size:23px;display:block;margin-top:4px}
-table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:10px;border-bottom:1px solid #ddd5c8}.collection{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}.mini{background:#fff;border:1px solid #ddd5c8;border-radius:14px;overflow:hidden}.mini img{width:100%;aspect-ratio:2/3;object-fit:cover}.mini div{padding:8px}.stars{color:#b18a42}.hidden{display:none!important}
-.room-code{font-size:42px;letter-spacing:7px;font-weight:900;text-align:center;background:#eee9df;border:2px dashed #416b73;border-radius:18px;padding:18px;margin:14px 0;direction:ltr}.copyrow{display:flex;gap:8px;align-items:stretch}.copyrow button{min-width:130px}.copyok{color:#357a55;font-weight:bold;min-height:22px}.battle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.battle-card{background:#fff;border:1px solid #ddd5c8;border-radius:20px;overflow:hidden}.battle-card img{width:100%;aspect-ratio:2/3;object-fit:cover}}.battle-fallback{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-size:30px;font-weight:900;color:var(--gold);background:rgba(7,27,23,.95)}.battle-body{padding:15px}.scoreline{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee5d9}.total-score{font-size:30px;font-weight:900;color:#416b73;margin-top:10px}.champion{background:#e2f0e7;border:2px solid #357a55;border-radius:20px;padding:22px;text-align:center;font-size:28px;font-weight:900}.pick-btn{width:100%;margin-top:8px}.selected{outline:3px solid #416b73}.formula{background:#eee9df;border-radius:14px;padding:13px;margin-top:12px}.final-table{margin-top:16px;overflow:auto}.final-table table{min-width:650px}@media(max-width:800px){.auction{grid-template-columns:1fr}.poster{max-width:290px;margin:auto}.buttons{grid-template-columns:repeat(2,1fr)}}
-
-<style>
-.special-panel{margin-top:14px;padding:12px;border:1px solid rgba(216,180,90,.28);border-radius:16px;background:rgba(5,18,15,.75)}
-.special-panel h3{color:#f0d98b;margin-bottom:8px}.card-actions{display:flex;gap:7px;flex-wrap:wrap}.card-actions button{font-size:13px;padding:9px 11px}
-.event-box{margin:10px 0;padding:12px;border:1px solid rgba(216,180,90,.35);border-radius:14px;background:rgba(216,180,90,.08);color:#f7f2e7}
-.secret-box{margin:10px 0;padding:16px;border:2px solid #d8b45a;border-radius:16px;background:rgba(216,180,90,.1);text-align:center}
-</style>
-<style>
-#savedResults{margin-top:16px}.saved-results{background:rgba(12,31,27,.72);border:1px solid rgba(216,180,90,.25);border-radius:16px;padding:14px}.saved-results h3{color:#f0d98b}.saved-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(216,180,90,.12)}
-</style></style><style id="account-ui">
-.account-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.account-box{padding:18px;border:1px solid rgba(216,180,90,.3);border-radius:18px;background:rgba(7,25,21,.8)}.account-box h2{margin-top:0;color:#f0d98b}.account-box input{width:100%;margin:7px 0}.account-actions{display:flex;gap:8px;flex-wrap:wrap}.account-msg{min-height:24px;margin-top:8px}.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.profile-stat{padding:12px;border:1px solid rgba(216,180,90,.2);border-radius:14px;background:rgba(216,180,90,.06);text-align:center}.profile-stat b{display:block;font-size:22px;color:#f0d98b}.account-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.account-name{color:#f0d98b;font-weight:900}
-</style><body>
-<div class="wrap">
-<section id="account" class="card">
-<div id="authForms">
-<h1>🔐 حسابك</h1><p class="muted">أنشئ حسابًا حتى تُحفظ نتائجك وتظهر لك من أي جهاز.</p>
-<div class="account-grid">
-<div class="account-box"><h2>تسجيل الدخول</h2><input id="loginUser" maxlength="20" placeholder="اسم المستخدم"><input id="loginPass" type="password" placeholder="كلمة المرور"><button id="loginBtn">دخول</button></div>
-<div class="account-box"><h2>إنشاء حساب</h2><input id="regUser" maxlength="20" placeholder="اسم المستخدم"><input id="regPass" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)"><button id="registerBtn">إنشاء حساب</button></div>
-</div><div id="authMsg" class="account-msg muted"></div>
-</div>
-<div id="accountLogged" class="hidden"><div class="account-top"><div>مرحبًا، <span id="accountName" class="account-name"></span> 👋</div><div class="account-actions"><button id="profileBtn" class="secondary">📊 ملفي</button><button id="logoutBtn" class="danger">تسجيل الخروج</button></div></div>
-<div id="profilePanel" class="hidden account-box"><h2>📊 ملفي</h2><div id="profileStats" class="profile-grid"></div><h3>آخر المباريات</h3><div id="profileResults"></div></div></div>
-</section>
-<section id="lobby" class="card hidden">
-<h1>مزاد 🎬⭐</h1>
-<p class="muted">نسخة أونلاين — أنشئ غرفة وشارك الكود مع أصدقائك.</p>
-<div id="lobbyForms">
-<div class="row"><div class="field"><label>الفئة</label><select id="category"><option value="films" selected>🎬 أفلام</option><option value="celebrities">🎭 مشاهير ممثلين عالميين</option><option value="countries">🌍 دول</option></select></div><div class="field"><label>اسمك</label><input id="myName" maxlength="20" value="عبدالله"></div><div class="field"><label>عدد اللاعبين</label><select id="playerCount"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div><div class="field"><label>الميزانية</label><input id="budget" type="number" min="20" value="500"></div><div class="field"><label>عدد العناصر</label><select id="rounds"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option selected>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option><option>46</option><option>47</option><option>48</option><option>49</option><option>50</option><option>51</option><option>52</option><option>53</option><option>54</option><option>55</option><option>56</option><option>57</option><option>58</option><option>59</option><option>60</option><option>61</option><option>62</option><option>63</option><option>64</option><option>65</option><option>66</option><option>67</option><option>68</option><option>69</option><option>70</option><option>71</option><option>72</option><option>73</option><option>74</option><option>75</option><option>76</option><option>77</option><option>78</option><option>79</option><option>80</option><option>81</option><option>82</option><option>83</option><option>84</option><option>85</option><option>86</option><option>87</option><option>88</option><option>89</option><option>90</option><option>91</option><option>92</option><option>93</option><option>94</option><option>95</option><option>96</option><option>97</option><option>98</option><option>99</option><option>100</option></select></div></div>
-<div class="buttons"><button id="create">إنشاء غرفة</button></div>
-<hr><div class="row"><div class="field"><label>كود الغرفة</label><input id="roomCode" maxlength="8" placeholder="مثال: MZ4821"></div><div class="field"><label>اسمك</label><input id="joinName" maxlength="20" placeholder="اسم اللاعب"></div></div><button id="join">دخول غرفة</button>
-</div>
-<div id="roomInfo" class="hidden"><h2>غرفة المزاد</h2><p class="muted">أرسل هذا الكود لأصدقائك للدخول إلى نفس الغرفة:</p><div id="code" class="room-code">----</div><div class="copyrow"><input id="shareCode" readonly><button id="copyCode" type="button">نسخ الكود</button></div><div id="copyMsg" class="copyok"></div><hr><h3>اللاعبون <span id="playerCountNow"></span></h3><div id="roomPlayers" class="players"></div><p id="hostHint" class="muted"></p><button id="startGame" class="hidden">🚀 ابدأ المزاد</button></div>
-<div id="status" class="muted"></div>
-</section>
-
-<section id="game" class="hidden">
-<div class="card"><div class="row" style="align-items:center;justify-content:space-between"><div><b>الغرفة:</b> <span id="gameCode"></span></div><div id="phaseLabel" class="turn"></div></div></div>
-<div class="auction">
-<div class="card"><div id="poster" class="poster"></div></div>
-<div class="card"><div class="muted"><span id="itemTypeLabel">الفيلم</span> <span id="roundNo"></span></div><div id="itemTitle" class="title"></div><div id="tags" class="tags"></div><div id="rarity" class="rarity"></div><div class="muted" style="margin-top:7px">⭐ التقييم والقيمة الحقيقية مخفيان</div><div id="turn" class="turn"></div><div id="timer" class="timer">15</div><div id="price" class="price">0 د.ك</div><div class="buttons"><button data-inc="10">+10</button><button data-inc="20">+20</button><button data-inc="50">+50</button><button data-inc="100">+100</button></div><div class="custom"><input id="custom" type="number" min="10" max="500" step="10" placeholder="زيادة 10–500"><button id="customBtn">مزايدة</button></div><div id="specialPanel" class="special-panel">
-<h3>🃏 البطاقات الخاصة</h3>
-<div class="card-actions">
-<button id="cardDouble">💰 قرض <span id="doubleCount">1</span></button>
-<button id="cardFreeze">🛑 تجميد <span id="freezeCount">1</span></button>
-<button id="cardReveal">👀 كشف القيمة <span id="revealCount">1</span></button>
-</div>
-<div id="cardHint" class="muted" style="margin-top:7px">لكل لاعب بطاقة واحدة من كل نوع. 💰 قرض: الدبل مكسب عند الفوز ومخاطرة عند الخسارة.</div>
-</div>
-<button id="worth" class="danger" style="width:100%">يستاهل — انسحب</button></div></div>
-<div class="card"><h2>اللاعبون</h2><div id="players" class="players"></div></div><div class="card"><h2>سجل المشتريات</h2><div id="log" class="log"></div></div>
-</section>
-
-<section id="selection" class="hidden"><div class="card"><h1>🔥 المواجهة الأخيرة</h1><p class="muted">كل لاعب يحتفظ بكل عناصره ويختار عنصرًا واحدًا فقط للمواجهة.</p><div id="selectionPlayer" class="turn"></div><div id="selectionMovies" class="collection"></div><div id="selectionWait" class="muted"></div></div></section>
-<section id="finalBattle" class="hidden"><div class="card"><h1>🏆 المواجهة الأخيرة</h1><p class="muted">كل لاعب يختار فيلمًا واحدًا، ثم تتم المقارنة بطريقة سهلة وواضحة.</p><div id="battleCards" class="battle-grid"></div></div><div class="card"><div id="champion" class="champion"></div><div id="battleDetails"></div>
-<div id="savedResults"></div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-<button id="homeBtn" class="secondary">🏠 العودة للصفحة الرئيسية</button>
-<button id="clearScoresBtn" class="danger">🗑️ مسح نتائجي المحفوظة</button>
-</div></div><div class="card"><h2>🏅 نتائج المزاد</h2><div id="auctionAwards" class="awards"></div></div></section>
-</div>
-</div>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ملك المملكة — Pro</title>
 <script src="/socket.io/socket.io.js"></script>
+<style>
+:root{--bg:#070a09;--panel:#111713;--panel2:#171e18;--gold:#d7ad55;--gold2:#f0d18a;--text:#f7f1e5;--muted:#9fa99f;--line:#303b31;--green:#5fb985;--red:#c85d5d;--blue:#6e9fd1;--shadow:0 20px 70px #0009}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#263a2d 0,#0a0f0b 38%,#050706 100%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}.wrap{max-width:1450px;margin:auto;padding:18px}.brand{text-align:center;padding:16px 0 22px}.brand .crown{font-size:42px}.brand h1{margin:2px 0;color:var(--gold2);font-size:42px;letter-spacing:.5px}.brand p{margin:7px;color:var(--muted)}.panel{background:linear-gradient(145deg,#151d17eF,#0d120eee);border:1px solid #344035;border-radius:22px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}.hidden{display:none!important}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.stat{background:#0b100c;border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}.stat b{display:block;color:var(--gold2);font-size:20px;margin:3px 0}.stat span{font-size:13px;color:var(--muted)}input,select{width:100%;padding:13px;border-radius:13px;border:1px solid #3a463c;background:#080d09;color:#fff;margin:5px 0 12px;font:inherit}button{border:1px solid #3b493e;background:#19231b;color:#fff;border-radius:13px;padding:12px 14px;font:inherit;font-weight:800;cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px);filter:brightness(1.12)}button:disabled{opacity:.35;cursor:not-allowed;transform:none}.primary{background:linear-gradient(135deg,#b8852d,#efd078);color:#1a1207;border-color:#efd078}.danger{background:#351919;border-color:#633131}.room{font-size:34px;letter-spacing:8px;color:var(--gold2);font-weight:900;text-align:center;margin:10px}.players{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.player{background:#0b110d;border:1px solid var(--line);border-radius:15px;padding:12px}.me{border-color:var(--gold)}.dead{opacity:.45}.mini{font-size:12px;color:var(--muted)}.turn{box-shadow:0 0 0 1px var(--gold),0 0 28px #d7ad5530}.gamegrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:14px}.mapbox{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 45%,#24382a,#0a100c 72%);border:1px solid #3b493b;border-radius:22px;padding:10px;min-height:620px}.maptitle{position:absolute;top:18px;right:22px;z-index:2;background:#080d0bd9;border:1px solid #465147;border-radius:999px;padding:8px 13px;color:var(--gold2);font-weight:800}.map{width:100%;height:auto;display:block}.middleeast-svg{width:100%;height:auto;display:block;min-height:520px;border-radius:18px}.real-region{cursor:pointer;stroke:#efe8d7;stroke-width:1.8;vector-effect:non-scaling-stroke;transition:filter .15s,stroke-width .15s,fill .15s}.real-region.hover,.island-region.hover{filter:brightness(1.25)}.real-region.selected,.island-region.selected{stroke:#ffe7a3;stroke-width:5;filter:drop-shadow(0 0 9px #efd078)}.real-label{fill:#fff8e6;font:800 14px Tahoma,Arial,sans-serif;paint-order:stroke;stroke:#182019;stroke-width:4px;pointer-events:none}.map-grid{stroke:#b8d5d8;stroke-width:.55;opacity:.09}.map-water text{fill:#b9d1d0;font:700 16px Tahoma,Arial,sans-serif;opacity:.65;pointer-events:none}.compass circle{fill:#091617aa;stroke:#c7d7d4;stroke-width:1}.compass text{fill:#fff;font:800 13px Arial}.compass path{fill:#d7ad55}.sea{fill:#0a1515}.land{fill:#4b4d3d;stroke:#a98b54;stroke-width:2}.region{cursor:pointer;transition:.15s}.region:hover{filter:brightness(1.3)}.region.selected{stroke:#fff3bd;stroke-width:5;filter:drop-shadow(0 0 8px #efd078)}.region text{pointer-events:none}.side{display:flex;flex-direction:column;gap:14px}.side .panel{margin:0}.actiongrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.legend{display:flex;gap:7px;flex-wrap:wrap}.legend span{font-size:11px;background:#0a100d;border:1px solid var(--line);border-radius:999px;padding:6px 9px}.howto{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:linear-gradient(135deg,#18271d,#101811);border:1px solid #39513e;border-radius:16px;padding:13px}.howto span{background:#0b120d;border:1px solid #2e3d31;border-radius:999px;padding:7px 10px;font-size:12px;color:#dfe8df}.log{height:205px;overflow:auto;background:#070b08;border:1px solid #1f2a21;border-radius:14px;padding:10px;font-size:12px;line-height:1.8}.targetbox{background:#0a100c;border:1px dashed #536052;border-radius:14px;padding:10px}.selectedInfo{line-height:1.8}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.cards button{font-size:12px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99;background:#f4e5bd;color:#181209;padding:11px 18px;border-radius:999px;box-shadow:0 10px 35px #000b}.hint{color:var(--muted);font-size:13px;line-height:1.7}.finishrank{display:grid;gap:8px}.rank{padding:14px;border:1px solid var(--line);background:#0a100c;border-radius:15px}.rank.first{border-color:var(--gold);box-shadow:0 0 28px #d7ad5522}.mobilebar{display:none}@media(max-width:950px){.gamegrid{grid-template-columns:1fr}.players{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.mapbox{min-height:0}.side{display:grid;grid-template-columns:1fr 1fr}.side .wide{grid-column:1/-1}}@media(max-width:650px){.wrap{padding:10px}.brand h1{font-size:30px}.grid,.players,.actiongrid,.cards{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.side{display:flex}.panel{padding:13px;border-radius:17px}.mapbox{padding:5px}.mobilebar{display:flex;position:sticky;bottom:8px;z-index:10;gap:7px}.mobilebar button{flex:1;font-size:12px}.log{height:150px}}
+</style></head>
+<body><div class="wrap">
+<header class="brand"><div class="crown">👑</div><h1>مَلِك المملكة</h1><p>احتل الدول المجاورة • اجمع الذهب تلقائياً • وسّع مملكتك</p></header>
+<section id="home" class="panel"><h2>🏰 غرفة الحرب</h2><label>اسم الملك</label><input id="name" maxlength="18" placeholder="مثلاً: عبدالله"><label>مدة المباراة</label><select id="rounds"><option>10</option><option selected>20</option><option>30</option></select><div class="grid"><button class="primary" onclick="createRoom()">🏰 إنشاء مملكة أونلاين</button><button onclick="showJoin()">🚪 دخول غرفة</button><button onclick="previewMap()">🗺️ استعراض الخريطة</button></div><div id="joinBox" class="hidden" style="margin-top:10px"><input id="code" maxlength="6" placeholder="رمز الغرفة ABC123" style="text-transform:uppercase"><button class="primary" onclick="joinRoom()">دخول المعركة</button></div><p class="hint">2–16 لاعبين • 16 دولة • هدفك السيطرة على أكبر عدد من الدول. كل دور = حركتان.</p></section>
+<section id="lobby" class="panel hidden"><div class="row between"><h2>🏰 قاعة العرش</h2><button onclick="location.reload()">خروج</button></div><div class="room" id="roomCode">------</div><p style="text-align:center;color:var(--muted)">شارك الرمز مع أصدقائك</p><div id="lobbyPlayers" class="players"></div><button id="startBtn" class="primary" style="width:100%;margin-top:12px" onclick="startGame()">⚔️ بدء الحرب</button><p id="lobbyHint" class="hint"></p></section>
+<section id="game" class="hidden"><div class="panel"><div class="row between"><div><b id="roundTxt">الجولة</b><div id="turnTxt" class="mini"></div></div><button onclick="location.reload()">خروج</button></div><div class="howto" style="margin-top:12px"><b>🎮 كيف تلعب؟</b><span>1) اضغط دولتك</span><span>2) اضغط دولة مجاورة</span><span>3) اضغط «احتلال»</span><span>4) يمكنك سحب جيش أي دولة لك ونقله لدولة لك</span><span>5) لديك حركتان كل دور</span><span>💰 الذهب والدخل يُضافان تلقائياً</span></div></div><div class="stats panel" id="myStats"></div>
+<div class="gamegrid"><div><div class="mapbox"><div class="maptitle">🌍 خريطة الشرق الأوسط — اضغط على دولة</div><div id="map" class="map" aria-label="خريطة الشرق الأوسط"></div></div><div class="panel"><div class="legend" id="legend"></div></div></div>
+<aside class="side"><div class="panel"><h3>📍 الإقليم المحدد</h3><div id="selectedInfo" class="selectedInfo hint">اختر دولة من الخريطة.</div></div><div class="panel"><h3>🎮 ماذا أفعل الآن؟</h3><div id="actions" class="actiongrid"></div><div id="targetBox" class="targetbox hidden" style="margin-top:9px"></div></div><div class="panel"><h3>👥 الممالك</h3><div id="players" style="display:grid;gap:7px"></div></div><div class="panel"><h3>🤝 السياسة</h3><div id="diplomacy" class="hint">لا توجد طلبات سياسية.</div></div><div class="panel"><h3>📜 سجل الحرب</h3><div id="log" class="log"></div></div></aside></div></section>
+<section id="finish" class="panel hidden"><h2>👑 نهاية المملكة</h2><div id="results" class="finishrank"></div><button class="primary" onclick="location.reload()">🏰 مباراة جديدة</button></section>
+</div><div id="toast" class="toast hidden"></div>
 <script>
-const celebrities = [
-{id:'celebrity-0',name:'Cristiano Ronaldo',year:2026,rating:7.5,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:0},
-{id:'celebrity-1',name:'Lionel Messi',year:2026,rating:8.2,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:1},
-{id:'celebrity-2',name:'LeBron James',year:2026,rating:8.9,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:2},
-{id:'celebrity-3',name:'Michael Jordan',year:2026,rating:9.6,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:3},
-{id:'celebrity-4',name:'Stephen Curry',year:2026,rating:7.8,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:4},
-{id:'celebrity-5',name:'Kevin Durant',year:2026,rating:8.5,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:5},
-{id:'celebrity-6',name:'Tom Brady',year:2026,rating:9.2,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:6},
-{id:'celebrity-7',name:'Patrick Mahomes',year:2026,rating:9.9,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:7},
-{id:'celebrity-8',name:'Tiger Woods',year:2026,rating:8.1,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:8},
-{id:'celebrity-9',name:'Roger Federer',year:2026,rating:8.8,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:0},
-{id:'celebrity-10',name:'Rafael Nadal',year:2026,rating:9.5,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:1},
-{id:'celebrity-11',name:'Novak Djokovic',year:2026,rating:7.7,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:2},
-{id:'celebrity-12',name:'Serena Williams',year:2026,rating:8.4,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:3},
-{id:'celebrity-13',name:'Usain Bolt',year:2026,rating:9.1,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:4},
-{id:'celebrity-14',name:'Conor McGregor',year:2026,rating:9.8,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:5},
-{id:'celebrity-15',name:'Khabib Nurmagomedov',year:2026,rating:8.0,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:79,awards:6},
-{id:'celebrity-16',name:'Neymar',year:2026,rating:8.7,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:92,awards:7},
-{id:'celebrity-17',name:'Kylian Mbappe',year:2026,rating:9.4,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:74,awards:8},
-{id:'celebrity-18',name:'Virat Kohli',year:2026,rating:7.6,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:87,awards:0},
-{id:'celebrity-19',name:'Sachin Tendulkar',year:2026,rating:8.3,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:100,awards:1},
-{id:'celebrity-20',name:'Lewis Hamilton',year:2026,rating:9.0,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:82,awards:2},
-{id:'celebrity-21',name:'Max Verstappen',year:2026,rating:9.7,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:95,awards:3},
-{id:'celebrity-22',name:'Simone Biles',year:2026,rating:7.9,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:77,awards:4},
-{id:'celebrity-23',name:"Shaquille O'Neal",year:2026,rating:8.6,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:90,awards:5},
-{id:'celebrity-24',name:'Kobe Bryant',year:2026,rating:9.3,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:72,awards:6},
-{id:'celebrity-25',name:'David Beckham',year:2026,rating:7.5,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:85,awards:7},
-{id:'celebrity-26',name:'Zlatan Ibrahimovic',year:2026,rating:8.2,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:98,awards:8},
-{id:'celebrity-27',name:'Mike Tyson',year:2026,rating:8.9,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:80,awards:0},
-{id:'celebrity-28',name:'Floyd Mayweather',year:2026,rating:9.6,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:93,awards:1},
-{id:'celebrity-29',name:'Muhammad Ali',year:2026,rating:7.8,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:75,awards:2},
-{id:'celebrity-30',name:'Dwayne Johnson',year:2026,rating:8.5,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:88,awards:3},
-{id:'celebrity-31',name:'Arnold Schwarzenegger',year:2026,rating:9.2,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:4},
-{id:'celebrity-32',name:'Jason Statham',year:2026,rating:9.9,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:5},
-{id:'celebrity-33',name:'Tom Cruise',year:2026,rating:8.1,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:6},
-{id:'celebrity-34',name:'Leonardo DiCaprio',year:2026,rating:8.8,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:7},
-{id:'celebrity-35',name:'Brad Pitt',year:2026,rating:9.5,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:8},
-{id:'celebrity-36',name:'Johnny Depp',year:2026,rating:7.7,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:0},
-{id:'celebrity-37',name:'Robert Downey Jr.',year:2026,rating:8.4,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:1},
-{id:'celebrity-38',name:'Chris Hemsworth',year:2026,rating:9.1,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:2},
-{id:'celebrity-39',name:'Chris Evans',year:2026,rating:9.8,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:3},
-{id:'celebrity-40',name:'Ryan Reynolds',year:2026,rating:8.0,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:4},
-{id:'celebrity-41',name:'Ryan Gosling',year:2026,rating:8.7,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:5},
-{id:'celebrity-42',name:'Will Smith',year:2026,rating:9.4,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:6},
-{id:'celebrity-43',name:'Keanu Reeves',year:2026,rating:7.6,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:7},
-{id:'celebrity-44',name:'Tom Hanks',year:2026,rating:8.3,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:8},
-{id:'celebrity-45',name:'George Clooney',year:2026,rating:9.0,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:0},
-{id:'celebrity-46',name:'Matt Damon',year:2026,rating:9.7,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:79,awards:1},
-{id:'celebrity-47',name:'Ben Affleck',year:2026,rating:7.9,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:92,awards:2},
-{id:'celebrity-48',name:'Christian Bale',year:2026,rating:8.6,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:74,awards:3},
-{id:'celebrity-49',name:'Hugh Jackman',year:2026,rating:9.3,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:87,awards:4},
-{id:'celebrity-50',name:'Henry Cavill',year:2026,rating:7.5,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:100,awards:5},
-{id:'celebrity-51',name:'Jason Momoa',year:2026,rating:8.2,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:82,awards:6},
-{id:'celebrity-52',name:'Pedro Pascal',year:2026,rating:8.9,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:95,awards:7},
-{id:'celebrity-53',name:'Joaquin Phoenix',year:2026,rating:9.6,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:77,awards:8},
-{id:'celebrity-54',name:'Al Pacino',year:2026,rating:7.8,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:90,awards:0},
-{id:'celebrity-55',name:'Robert De Niro',year:2026,rating:8.5,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:72,awards:1},
-{id:'celebrity-56',name:'Morgan Freeman',year:2026,rating:9.2,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:85,awards:2},
-{id:'celebrity-57',name:'Samuel L. Jackson',year:2026,rating:9.9,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:98,awards:3},
-{id:'celebrity-58',name:'Jackie Chan',year:2026,rating:8.1,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:80,awards:4},
-{id:'celebrity-59',name:'Jet Li',year:2026,rating:8.8,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:93,awards:5},
-{id:'celebrity-60',name:'Bruce Lee',year:2026,rating:9.5,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:75,awards:6},
-{id:'celebrity-61',name:'Sylvester Stallone',year:2026,rating:7.7,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:88,awards:7},
-{id:'celebrity-62',name:'Jean-Claude Van Damme',year:2026,rating:8.4,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:8},
-{id:'celebrity-63',name:'Jim Carrey',year:2026,rating:9.1,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:0},
-{id:'celebrity-64',name:'Rowan Atkinson',year:2026,rating:9.8,baseValue:160,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:1},
-{id:'celebrity-65',name:'Steve Carell',year:2026,rating:8.0,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:2},
-{id:'celebrity-66',name:'Adam Sandler',year:2026,rating:8.7,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:3},
-{id:'celebrity-67',name:'Eddie Murphy',year:2026,rating:9.4,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:4},
-{id:'celebrity-68',name:'Kevin Hart',year:2026,rating:7.6,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:5},
-{id:'celebrity-69',name:'Jack Black',year:2026,rating:8.3,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:6},
-{id:'celebrity-70',name:'Gordon Ramsay',year:2026,rating:9.0,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:7},
-{id:'celebrity-71',name:'Simon Cowell',year:2026,rating:9.7,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:8},
-{id:'celebrity-72',name:'Oprah Winfrey',year:2026,rating:7.9,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:0},
-{id:'celebrity-73',name:'Ellen DeGeneres',year:2026,rating:8.6,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:1},
-{id:'celebrity-74',name:'Jimmy Fallon',year:2026,rating:9.3,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:2},
-{id:'celebrity-75',name:'Trevor Noah',year:2026,rating:7.5,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:3},
-{id:'celebrity-76',name:'Kim Kardashian',year:2026,rating:8.2,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:4},
-{id:'celebrity-77',name:'Kylie Jenner',year:2026,rating:8.9,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:79,awards:5},
-{id:'celebrity-78',name:'Kendall Jenner',year:2026,rating:9.6,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:92,awards:6},
-{id:'celebrity-79',name:'Paris Hilton',year:2026,rating:7.8,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:74,awards:7},
-{id:'celebrity-80',name:'MrBeast',year:2026,rating:8.5,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:87,awards:8},
-{id:'celebrity-81',name:'PewDiePie',year:2026,rating:9.2,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:100,awards:0},
-{id:'celebrity-82',name:'Logan Paul',year:2026,rating:9.9,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:82,awards:1},
-{id:'celebrity-83',name:'Jake Paul',year:2026,rating:8.1,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:95,awards:2},
-{id:'celebrity-84',name:'Khaby Lame',year:2026,rating:8.8,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:77,awards:3},
-{id:'celebrity-85',name:"Charli D'Amelio",year:2026,rating:9.5,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:90,awards:4},
-{id:'celebrity-86',name:'Addison Rae',year:2026,rating:7.7,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:72,awards:5},
-{id:'celebrity-87',name:'Taylor Swift',year:2026,rating:8.4,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:85,awards:6},
-{id:'celebrity-88',name:'Beyonce',year:2026,rating:9.1,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:98,awards:7},
-{id:'celebrity-89',name:'Rihanna',year:2026,rating:9.8,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:80,awards:8},
-{id:'celebrity-90',name:'Adele',year:2026,rating:8.0,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:93,awards:0},
-{id:'celebrity-91',name:'Lady Gaga',year:2026,rating:8.7,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:75,awards:1},
-{id:'celebrity-92',name:'Ariana Grande',year:2026,rating:9.4,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:88,awards:2},
-{id:'celebrity-93',name:'Selena Gomez',year:2026,rating:7.6,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:3},
-{id:'celebrity-94',name:'Justin Bieber',year:2026,rating:8.3,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:4},
-{id:'celebrity-95',name:'Ed Sheeran',year:2026,rating:9.0,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:5},
-{id:'celebrity-96',name:'Drake',year:2026,rating:9.7,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:6},
-{id:'celebrity-97',name:'The Weeknd',year:2026,rating:7.9,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:7},
-{id:'celebrity-98',name:'Bruno Mars',year:2026,rating:8.6,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:8},
-{id:'celebrity-99',name:'Eminem',year:2026,rating:9.3,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:0},
-{id:'celebrity-100',name:'Snoop Dogg',year:2026,rating:7.5,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:1},
-{id:'celebrity-101',name:'Jay-Z',year:2026,rating:8.2,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:2},
-{id:'celebrity-102',name:'Kanye West',year:2026,rating:8.9,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:3},
-{id:'celebrity-103',name:'Kendrick Lamar',year:2026,rating:9.6,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:4},
-{id:'celebrity-104',name:'Travis Scott',year:2026,rating:7.8,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:5},
-{id:'celebrity-105',name:'Post Malone',year:2026,rating:8.5,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:6},
-{id:'celebrity-106',name:'Billie Eilish',year:2026,rating:9.2,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:7},
-{id:'celebrity-107',name:'Miley Cyrus',year:2026,rating:9.9,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:8},
-{id:'celebrity-108',name:'Dua Lipa',year:2026,rating:8.1,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:79,awards:0},
-{id:'celebrity-109',name:'Harry Styles',year:2026,rating:8.8,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:92,awards:1},
-{id:'celebrity-110',name:'Shakira',year:2026,rating:9.5,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:74,awards:2},
-{id:'celebrity-111',name:'Jennifer Lopez',year:2026,rating:7.7,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:87,awards:3},
-{id:'celebrity-112',name:'Nicki Minaj',year:2026,rating:8.4,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:100,awards:4},
-{id:'celebrity-113',name:'Cardi B',year:2026,rating:9.1,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:82,awards:5},
-{id:'celebrity-114',name:'Megan Thee Stallion',year:2026,rating:9.8,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:95,awards:6},
-{id:'celebrity-115',name:'Doja Cat',year:2026,rating:8.0,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:77,awards:7},
-{id:'celebrity-116',name:'Katy Perry',year:2026,rating:8.7,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:90,awards:8},
-{id:'celebrity-117',name:'Britney Spears',year:2026,rating:9.4,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:72,awards:0},
-{id:'celebrity-118',name:'Christina Aguilera',year:2026,rating:7.6,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:85,awards:1},
-{id:'celebrity-119',name:'Madonna',year:2026,rating:8.3,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:98,awards:2},
-{id:'celebrity-120',name:'Celine Dion',year:2026,rating:9.0,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:80,awards:3},
-{id:'celebrity-121',name:'Mariah Carey',year:2026,rating:9.7,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:93,awards:4},
-{id:'celebrity-122',name:'Justin Timberlake',year:2026,rating:7.9,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:75,awards:5},
-{id:'celebrity-123',name:'Usher',year:2026,rating:8.6,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:88,awards:6},
-{id:'celebrity-124',name:'50 Cent',year:2026,rating:9.3,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:7},
-{id:'celebrity-125',name:'Akon',year:2026,rating:7.5,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:8},
-{id:'celebrity-126',name:'Pitbull',year:2026,rating:8.2,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:0},
-{id:'celebrity-127',name:'Jason Derulo',year:2026,rating:8.9,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:1},
-{id:'celebrity-128',name:'BTS',year:2026,rating:9.6,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:2},
-{id:'celebrity-129',name:'Jungkook',year:2026,rating:7.8,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:3},
-{id:'celebrity-130',name:'Jimin',year:2026,rating:8.5,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:4},
-{id:'celebrity-131',name:'V',year:2026,rating:9.2,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:5},
-{id:'celebrity-132',name:'RM',year:2026,rating:9.9,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:6},
-{id:'celebrity-133',name:'Blackpink',year:2026,rating:8.1,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:7},
-{id:'celebrity-134',name:'Lisa',year:2026,rating:8.8,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:8},
-{id:'celebrity-135',name:'Jennie',year:2026,rating:9.5,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:0},
-{id:'celebrity-136',name:'Rosé',year:2026,rating:7.7,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:1},
-{id:'celebrity-137',name:'Jisoo',year:2026,rating:8.4,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:2},
-{id:'celebrity-138',name:'Zayn Malik',year:2026,rating:9.1,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:3},
-{id:'celebrity-139',name:'Bad Bunny',year:2026,rating:9.8,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:79,awards:4},
-{id:'celebrity-140',name:'Daddy Yankee',year:2026,rating:8.0,baseValue:120,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:92,awards:5},
-{id:'celebrity-141',name:'Maluma',year:2026,rating:8.7,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:74,awards:6},
-{id:'celebrity-142',name:'Karol G',year:2026,rating:9.4,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:87,awards:7},
-{id:'celebrity-143',name:'Anitta',year:2026,rating:7.6,baseValue:50,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:100,awards:8},
-{id:'celebrity-144',name:'Shah Rukh Khan',year:2026,rating:8.3,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:82,awards:0},
-{id:'celebrity-145',name:'Amitabh Bachchan',year:2026,rating:9.0,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:95,awards:1},
-{id:'celebrity-146',name:'Priyanka Chopra',year:2026,rating:9.7,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:77,awards:2},
-{id:'celebrity-147',name:'Deepika Padukone',year:2026,rating:7.9,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:90,awards:3},
-{id:'celebrity-148',name:'Aishwarya Rai',year:2026,rating:8.6,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:72,awards:4},
-{id:'celebrity-149',name:'Salman Khan',year:2026,rating:9.3,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:85,awards:5},
-{id:'celebrity-150',name:'Aamir Khan',year:2026,rating:7.5,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:98,awards:6},
-{id:'celebrity-151',name:'Hrithik Roshan',year:2026,rating:8.2,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:80,awards:7},
-{id:'celebrity-152',name:'Rajinikanth',year:2026,rating:8.9,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:93,awards:8},
-{id:'celebrity-153',name:'Alia Bhatt',year:2026,rating:9.6,baseValue:100,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:75,awards:0},
-{id:'celebrity-154',name:'Zendaya',year:2026,rating:7.8,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:88,awards:1},
-{id:'celebrity-155',name:'Sydney Sweeney',year:2026,rating:8.5,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:70,awards:2},
-{id:'celebrity-156',name:'Margot Robbie',year:2026,rating:9.2,baseValue:150,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:83,awards:3},
-{id:'celebrity-157',name:'Emma Stone',year:2026,rating:9.9,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:96,awards:4},
-{id:'celebrity-158',name:'Emma Watson',year:2026,rating:8.1,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:78,awards:5},
-{id:'celebrity-159',name:'Jennifer Lawrence',year:2026,rating:8.8,baseValue:80,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:6},
-{id:'celebrity-160',name:'Anne Hathaway',year:2026,rating:9.5,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:73,awards:7},
-{id:'celebrity-161',name:'Scarlett Johansson',year:2026,rating:7.7,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:86,awards:8},
-{id:'celebrity-162',name:'Angelina Jolie',year:2026,rating:8.4,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:99,awards:0},
-{id:'celebrity-163',name:'Natalie Portman',year:2026,rating:9.1,baseValue:140,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:81,awards:1},
-{id:'celebrity-164',name:'Gal Gadot',year:2026,rating:9.8,baseValue:40,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:94,awards:2},
-{id:'celebrity-165',name:'Millie Bobby Brown',year:2026,rating:8.0,baseValue:60,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:76,awards:3},
-{id:'celebrity-166',name:'Jenna Ortega',year:2026,rating:8.7,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:89,awards:4},
-{id:'celebrity-167',name:'Anya Taylor-Joy',year:2026,rating:9.4,baseValue:90,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:71,awards:5},
-{id:'celebrity-168',name:'Florence Pugh',year:2026,rating:7.6,baseValue:110,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:84,awards:6},
-{id:'celebrity-169',name:'Timothée Chalamet',year:2026,rating:8.3,baseValue:130,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:97,awards:7},
-{id:'celebrity-170',name:'Denzel Washington',year:2026,rating:8.5,baseValue:80,genre:'مشهور عالمي',rarity:'نادر',rarityClass:'rare',img:'',fame:96,awards:7},
-{id:'celebrity-171',name:'Sergio Ramos',year:2026,rating:8.2,baseValue:70,genre:'مشهور عالمي',rarity:'مميز',rarityClass:'special',img:'',fame:91,awards:6},
-];
-let socket=null;
-const $=id=>document.getElementById(id);
-let room='',me='',isHost=false,state=null,localTimer=null,currentUser=null,revealedItemId=null,revealedRating=null;
-function setStatus(msg,good=false){ if($('status')){$('status').textContent=msg;$('status').style.color=good?'#357a55':'#a94d43';} }
-function authMessage(msg,good=false){$('authMsg').textContent=msg;$('authMsg').style.color=good?'#357a55':'#a94d43';}
-async function api(url,options={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||'حدث خطأ.');return d}
-function connectSocket(){
- if(socket){try{socket.disconnect()}catch(e){}}
- if(typeof io!=='function'){setStatus('تعذر تحميل Socket.IO.');return;}
- socket=io({transports:['websocket','polling']});
- socket.on('connect',()=>{setStatus('متصل بالسيرفر ✓',true);$('create').disabled=false;$('join').disabled=false;});
- socket.on('connect_error',e=>{setStatus('تعذر الاتصال بالسيرفر: '+(e?.message||'خطأ اتصال'));$('create').disabled=true;$('join').disabled=true;});
- socket.on('bidAccepted',d=>{setStatus('تمت المزايدة ✓ — أعلى سعر الآن '+d.amount+' د.ك',true);});
- socket.on('selectionAccepted',d=>{setStatus('تم اختيار '+(d?.film||'الفيلم')+' ✓',true); if(state){ renderState(); }});
- socket.on('selectionError',d=>{setStatus(d?.error||'تعذر اختيار الفيلم. حاول مرة أخرى.');renderSelection();});
- socket.on('disconnect',()=>{setStatus('انقطع الاتصال بالسيرفر.');});
- socket.on('roomCreated',d=>{room=d.room;isHost=true;enterRoom(d.state);});
- socket.on('joined',d=>{room=d.room;isHost=false;enterRoom(d.state);});
- socket.on('errorMsg',m=>setStatus(m));
- socket.on('cardUsed',d=>setStatus(d?.message||'تم استخدام البطاقة ✓',true));
- socket.on('loanPenalty',d=>setStatus(d?.message||`💸 خسرت القرض — خُصم ${d?.charged||0} د.ك.`,false));
- socket.on('loanWon',d=>setStatus(d?.message||`💰 فزت بالقرض — دفعت ${d?.amount||0} د.ك.`,true));
- socket.on('cardRevealResult',d=>{revealedItemId=d?.itemId||null;revealedRating=Number(d?.rating);setStatus(`👀 تم كشف تقييم ${d?.name||'العنصر'}: ${Number.isFinite(revealedRating)?revealedRating.toFixed(1):d?.rating}/10`,true);renderAuction();});
- socket.on('state',s=>{if(s?.film?.id!==revealedItemId){revealedItemId=null;revealedRating=null;}state=s;if(s&&s.phase==='auction')clearInterval(localTimer);renderState();});
- socket.on('roundStarted',d=>{clearInterval(localTimer);show('game');if(state){state.phase='auction';state.turnEndsAt=d.turnEndsAt;renderAuction();}});
- socket.on('disconnectedPlayer',name=>alert(name+' خرج من الغرفة.'));
+let socket=null,code='',state=null,selectedRegion=null,pending=null,withdrawSource=null,supportSource=null;const $=id=>document.getElementById(id);
+function toast(t){if(!t)return;$('toast').textContent=t;$('toast').classList.remove('hidden');clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').classList.add('hidden'),2400)}
+function esc(s){return String(s).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+function ensureSocket(){if(socket)return true;try{socket=io();socket.on('state',render);socket.on('disconnect',()=>toast('انقطع اتصال الخادم'));return true}catch(e){return false}}
+function createRoom(){if(!ensureSocket())return toast('شغّل اللعبة من الخادم أولاً');let n=$('name').value.trim()||'ملك';socket.emit('createRoom',{name:n,maxRounds:+$('rounds').value},r=>{if(r?.ok){code=r.code;showLobby()}else toast(r?.error)})}
+function showJoin(){$('joinBox').classList.toggle('hidden')}
+function joinRoom(){if(!ensureSocket())return toast('شغّل اللعبة من الخادم أولاً');socket.emit('joinRoom',{name:$('name').value.trim()||'ملك',code:$('code').value.trim().toUpperCase()},r=>{if(r?.ok){code=r.code;showLobby()}else toast(r?.error)})}
+function showLobby(){$('home').classList.add('hidden');$('lobby').classList.remove('hidden');$('roomCode').textContent=code}
+function startGame(){socket.emit('start',{code},r=>{if(!r?.ok)toast(r?.error)})}
+function previewMap(){state={regions:demoRegions(),players:[{id:'demo',name:'مملكتك',color:'#c79a45',gold:500,army:160,score:800,alive:true,cards:[]}],turnPlayer:'demo',round:1,maxRounds:20,event:'وضع الاستعراض 🗺️',eventDesc:'اضغط على الدول لرؤية تفاصيلها.',log:['🗺️ هذه معاينة للخريطة. لإنشاء مباراة حقيقية شغّل server.js.']};$('home').classList.add('hidden');$('game').classList.remove('hidden');renderMap();renderPanels(true)}
+function demoRegions(){return [
+{id:0,name:'تركيا',capital:'أنقرة',areas:[],owner:'demo',army:140,level:1,income:85,defense:45},
+{id:1,name:'سوريا',capital:'دمشق',areas:[],owner:null,army:105,level:1,income:75,defense:40},
+{id:2,name:'لبنان',capital:'بيروت',areas:[],owner:null,army:100,level:1,income:72,defense:38},
+{id:3,name:'فلسطين',capital:'القدس',areas:[],owner:null,army:100,level:1,income:72,defense:40},
+{id:4,name:'الأردن',capital:'عمّان',areas:[],owner:null,army:105,level:1,income:75,defense:40},
+{id:5,name:'العراق',capital:'بغداد',areas:[],owner:null,army:120,level:1,income:88,defense:45},
+{id:6,name:'إيران',capital:'طهران',areas:[],owner:null,army:130,level:1,income:95,defense:48},
+{id:7,name:'الكويت',capital:'مدينة الكويت',areas:[],owner:null,army:95,level:1,income:78,defense:42},
+{id:8,name:'السعودية',capital:'الرياض',areas:[],owner:null,army:135,level:1,income:105,defense:50},
+{id:9,name:'البحرين',capital:'المنامة',areas:[],owner:null,army:90,level:1,income:70,defense:38},
+{id:10,name:'قطر',capital:'الدوحة',areas:[],owner:null,army:90,level:1,income:76,defense:38},
+{id:11,name:'الإمارات',capital:'أبوظبي',areas:[],owner:null,army:105,level:1,income:90,defense:43},
+{id:12,name:'عُمان',capital:'مسقط',areas:[],owner:null,army:110,level:1,income:84,defense:45},
+{id:13,name:'اليمن',capital:'صنعاء',areas:[],owner:null,army:110,level:1,income:78,defense:44},
+{id:14,name:'مصر',capital:'القاهرة',areas:[],owner:null,army:125,level:1,income:100,defense:48},
+{id:15,name:'إسرائيل',capital:'القدس',areas:[],owner:null,army:110,level:1,income:80,defense:42}
+]}
+function render(s){state=s;if(!s.started&&s.phase==='lobby'){showLobby();$('lobbyPlayers').innerHTML=s.players.map(p=>`<div class="player ${p.id===socket.id?'me':''}"><b>${esc(p.name)}</b> ${p.id===s.host?'👑':''}</div>`).join('');$('startBtn').style.display=s.host===socket.id?'block':'none';$('lobbyHint').textContent=s.players.length<2?'تحتاج لاعبين اثنين على الأقل.':`جاهز للبدء! ${s.players.length}/${s.maxPlayers||16} مملكة.`;return}if(s.phase==='finished'){finish(s);return}$('home').classList.add('hidden');$('lobby').classList.add('hidden');$('game').classList.remove('hidden');renderMap();renderPanels(false)}
+const REAL_MIDDLE_EAST_GEOJSON={"type":"FeatureCollection","features":[{"id":"0","type":"Feature","properties":{"name":"Israel","iso":"ISR","ar":"إسرائيل"},"geometry":{"type":"Polygon","coordinates":[[[35.71991824722275,32.709192409794866],[35.54566531753454,32.393992011030576],[35.183930291491436,32.53251068778894],[34.97464074070933,31.866582343059722],[35.22589155451243,31.754341132121766],[34.970506626125996,31.61677846936081],[34.92740848159457,31.353435370401414],[35.397560662586045,31.489086005167582],[35.420918409981965,31.100065822874356],[34.92260257339143,29.501326198844524],[34.823243288783814,29.76108076171822],[34.265440000000005,31.219359999999998],[34.26543474464621,31.21935730952032],[34.26543338393569,31.219360866820153],[34.55637169773891,31.548823960896996],[34.48810713068136,31.60553884533732],[34.75258711115117,32.07292633720117],[34.95541710789678,32.82737641044638],[35.098457472480675,33.080539252244265],[35.126052687324545,33.09090037691878],[35.460709262846706,33.08904002535628],[35.55279666519081,33.26427480725802],[35.82110070165024,33.2774264592763],[35.836396925608625,32.86812327730851],[35.70079796727475,32.71601369885738],[35.71991824722275,32.709192409794866]]]},"bbox":[34.26543338393569,29.501326198844524,35.836396925608625,33.2774264592763]},{"id":"0","type":"Feature","properties":{"name":"Lebanon","iso":"LBN","ar":"لبنان"},"geometry":{"type":"Polygon","coordinates":[[[35.82110070165024,33.2774264592763],[35.55279666519081,33.26427480725802],[35.460709262846706,33.08904002535628],[35.126052687324545,33.09090037691878],[35.48220665868013,33.90545014091944],[35.9795923194894,34.61005829521913],[35.99840254084364,34.644914048800004],[36.4481942075121,34.59393524834407],[36.61175011571589,34.20178864189718],[36.066460402172055,33.82491242119255],[35.82110070165024,33.2774264592763]]]},"bbox":[35.126052687324545,33.08904002535628,36.61175011571589,34.644914048800004]},{"id":"0","type":"Feature","properties":{"name":"Palestine","iso":"PSE","ar":"فلسطين"},"geometry":{"type":"Polygon","coordinates":[[[35.397560662586045,31.489086005167582],[34.92740848159457,31.353435370401414],[34.970506626125996,31.61677846936081],[35.22589155451243,31.754341132121766],[34.97464074070933,31.866582343059722],[35.183930291491436,32.53251068778894],[35.54566531753454,32.393992011030576],[35.5452519060762,31.78250478772084],[35.397560662586045,31.489086005167582]]]},"bbox":[34.92740848159457,31.353435370401414,35.54566531753454,32.53251068778894]},{"id":"0","type":"Feature","properties":{"name":"Jordan","iso":"JOR","ar":"الأردن"},"geometry":{"type":"Polygon","coordinates":[[[35.54566531753454,32.393992011030576],[35.71991824722275,32.709192409794866],[36.834062127435544,32.312937526980775],[38.792340529136084,33.378686428352225],[39.19546837744497,32.16100881604267],[39.00488569515255,32.01021698661498],[37.00216556168101,31.508412990844747],[37.998848911294374,30.508499864213135],[37.66811974462638,30.3386652694859],[37.503581984209035,30.003776150018407],[36.74052778498725,29.86528331147619],[36.50121422704359,29.505253607698705],[36.06894087092206,29.197494615184453],[34.95603722508426,29.356554673778845],[34.92260257339143,29.501326198844524],[35.420918409981965,31.100065822874356],[35.397560662586045,31.489086005167582],[35.5452519060762,31.78250478772084],[35.54566531753454,32.393992011030576]]]},"bbox":[34.92260257339143,29.197494615184453,39.19546837744497,33.378686428352225]},{"id":"0","type":"Feature","properties":{"name":"United Arab Emirates","iso":"ARE","ar":"الإمارات"},"geometry":{"type":"Polygon","coordinates":[[[51.57951867046327,24.245497137951105],[51.757440626844186,24.29407298430547],[51.79438927593287,24.019826158132506],[52.57708051942561,24.177439276622707],[53.404006788960146,24.15131684009917],[54.00800092958758,24.121757920828216],[54.69302371604863,24.79789236093509],[55.43902469261414,25.43914520924494],[56.07082075381456,26.05546417897398],[56.261041701080956,25.71460643157677],[56.396847365144005,24.924732163995486],[55.88623253766801,24.920830593357447],[55.804118686756226,24.269604193615265],[55.98121382022046,24.13054291431783],[55.52863162620824,23.933604030853502],[55.525841098864475,23.524869289640932],[55.234489373602884,23.110992743415324],[55.208341098863194,22.708329982997046],[55.006803012924905,22.496947536707136],[52.000733270074335,23.00115448657894],[51.61770755392698,24.01421926522883],[51.57951867046327,24.245497137951105]]]},"bbox":[51.57951867046327,22.496947536707136,56.396847365144005,26.05546417897398]},{"id":"0","type":"Feature","properties":{"name":"Qatar","iso":"QAT","ar":"قطر"},"geometry":{"type":"Polygon","coordinates":[[[50.81010827006958,24.754742539971378],[50.74391076030369,25.482424221289396],[51.013351678273494,26.006991685484195],[51.28646162293606,26.11458201751587],[51.58907881043726,25.80111277923338],[51.60670047384881,25.21567047779874],[51.38960778179063,24.62738597258806],[51.11241539897702,24.556330878186724],[50.81010827006958,24.754742539971378]]]},"bbox":[50.74391076030369,24.556330878186724,51.60670047384881,26.11458201751587]},{"id":"0","type":"Feature","properties":{"name":"Kuwait","iso":"KWT","ar":"الكويت"},"geometry":{"type":"Polygon","coordinates":[[[47.974519077349896,29.975819200148504],[48.18318851094449,29.534476630159762],[48.09394331237642,29.306299343375002],[48.416094191283946,28.55200429942667],[47.708850538937384,28.526062730416143],[47.45982181172283,29.002519436147224],[46.568713413281756,29.09902517345229],[47.30262210469096,30.059069932570722],[47.974519077349896,29.975819200148504]]]},"bbox":[46.568713413281756,28.526062730416143,48.416094191283946,30.059069932570722]},{"id":"0","type":"Feature","properties":{"name":"Iraq","iso":"IRQ","ar":"العراق"},"geometry":{"type":"Polygon","coordinates":[[[39.19546837744497,32.16100881604267],[38.792340529136084,33.378686428352225],[41.006158888519934,34.41937226006212],[41.383965285005814,35.628316555314356],[41.289707472505455,36.35881460219227],[41.83706424334096,36.605853786763575],[42.34959109881177,37.2298725449041],[42.77912560402183,37.385263576805755],[43.9422587420473,37.25622752537295],[44.29345177590287,37.0015143906063],[44.77267710159504,37.17043692561684],[45.42061811705321,35.977545884742824],[46.0763403664048,35.67738332777549],[46.15178795755094,35.09325877536429],[45.64845950702809,34.748137722303014],[45.41669070819904,33.967797756479584],[46.10936160663932,33.017287299119005],[47.33466149271191,32.46915538179911],[47.8492037290421,31.70917593029867],[47.68528608581227,30.984853217079632],[48.004698113808324,30.985137437457244],[48.0145683123761,30.452456773392598],[48.567971225789755,29.926778265903522],[47.974519077349896,29.975819200148504],[47.30262210469096,30.059069932570722],[46.568713413281756,29.09902517345229],[44.70949873228474,29.178891099559383],[41.889980910007836,31.19000865327837],[40.399994337736246,31.889991766887935],[39.19546837744497,32.16100881604267]]]},"bbox":[38.792340529136084,29.09902517345229,48.567971225789755,37.385263576805755]},{"id":"0","type":"Feature","properties":{"name":"Oman","iso":"OMN","ar":"عُمان"},"geometry":{"type":"MultiPolygon","coordinates":[[[[55.208341098863194,22.708329982997046],[55.234489373602884,23.110992743415324],[55.525841098864475,23.524869289640932],[55.52863162620824,23.933604030853502],[55.98121382022046,24.13054291431783],[55.804118686756226,24.269604193615265],[55.88623253766801,24.920830593357447],[56.396847365144005,24.924732163995486],[56.845140415276006,24.241673081961505],[57.4034525897574,23.878594468678813],[58.13694786970825,23.74793060962881],[58.72921146020542,23.56566783293536],[59.18050174341033,22.992395331305474],[59.45009769067703,22.6602709009656],[59.80806033716286,22.533611965418217],[59.806148309168066,22.310524807214193],[59.442191196536385,21.714540513592027],[59.28240766788991,21.43388580981485],[58.86114139184656,21.114034532144302],[58.48798587426694,20.428985907467094],[58.034318475176605,20.481437486243337],[57.826372511634105,20.24300242764863],[57.665762160070955,19.73600495043307],[57.788700392493325,19.067570298737678],[57.694390903560645,18.94470958096376],[57.234263950433814,18.947991034414287],[56.60965091332193,18.574267076079465],[56.51218916201947,18.087113348863966],[56.28352094912793,17.876066799383963],[55.66149173363064,17.884128322821496],[55.26993940615512,17.632309068263197],[55.27490034365513,17.22835439703762],[54.79100223167404,16.95069692633338],[54.23925296409371,17.044980577049913],[53.570508253804576,16.707662665264706],[53.10857262554751,16.651051133688952],[52.78218427919205,17.349742336491232],[52.00000980002224,19.000003363516058],[54.99998172386236,19.999994004796108],[55.666659376859826,22.00000112557234],[55.208341098863194,22.708329982997046]]],[[[56.261041701080956,25.71460643157677],[56.07082075381456,26.05546417897398],[56.36201744977927,26.39593435312898],[56.48567915225374,26.309117946878633],[56.39142133975335,25.895990708921246],[56.261041701080956,25.71460643157677]]]]},"bbox":[52.00000980002224,16.651051133688952,59.80806033716286,26.39593435312898]},{"id":"0","type":"Feature","properties":{"name":"Iran","iso":"IRN","ar":"إيران"},"geometry":{"type":"Polygon","coordinates":[[[48.567971225789755,29.926778265903522],[48.0145683123761,30.452456773392598],[48.004698113808324,30.985137437457244],[47.68528608581227,30.984853217079632],[47.8492037290421,31.70917593029867],[47.33466149271191,32.46915538179911],[46.10936160663932,33.017287299119005],[45.41669070819904,33.967797756479584],[45.64845950702809,34.748137722303014],[46.15178795755094,35.09325877536429],[46.0763403664048,35.67738332777549],[45.42061811705321,35.977545884742824],[44.77267710159504,37.17043692561684],[44.77267,37.17045],[44.22575564960053,37.97158437758935],[44.421402622257546,38.28128123631454],[44.10922529478234,39.4281362981681],[44.79398969908195,39.71300263117705],[44.95268802265031,39.33576467544637],[45.45772179543877,38.87413910578306],[46.14362308124882,38.74120148371222],[46.50571984231797,38.770605373686294],[47.685079380083096,39.50836395930122],[48.06009524922524,39.58223541926246],[48.35552941263788,39.28876496027691],[48.01074425638648,38.79401479751452],[48.63437544128482,38.27037750910097],[48.88324913920249,38.32024526626262],[49.19961225769334,37.582874253889884],[50.14777143738462,37.37456655532134],[50.84235436381971,36.8728142359834],[52.264024692601424,36.7004216578577],[53.82578982932642,36.965030829408235],[53.92159793479556,37.19891836196126],[54.800303989486565,37.392420762678185],[55.51157840355191,37.96411713312317],[56.18037479027333,37.93512665460743],[56.61936608259282,38.121394354803485],[57.330433790928986,38.02922943781094],[58.436154412678206,37.5223094752438],[59.23476199731681,37.41298798273034],[60.37763797388388,36.52738312432837],[61.123070509694145,36.491597194966246],[61.210817091725744,35.650072333309225],[60.80319339380745,34.40410187431986],[60.52842980331158,33.676446031218006],[60.963700392506006,33.52883230237626],[60.536077915290775,32.98126882581157],[60.863654819588966,32.18291962333443],[60.94194461451113,31.548074652628753],[61.69931440618083,31.379506130492672],[61.781221551363444,30.735850328081238],[60.87424848820879,29.829238999952608],[61.36930870956494,29.303276272085924],[61.77186811711863,28.6993338078908],[62.72783043808599,28.25964488373539],[62.75542565292986,27.378923448184988],[63.2338977395203,27.21704702403071],[63.31663170761959,26.756532497661667],[61.87418745305655,26.239974880472104],[61.49736290878419,25.0782370061185],[59.616134067630846,25.380156561783778],[58.525761346272304,25.60996165618573],[57.39725141788239,25.73990204518364],[56.970765822177555,26.966106268821363],[56.492138706290206,27.143304755150197],[55.723710158110066,26.964633490501043],[54.71508955263727,26.480657863871514],[53.49309695823135,26.81236888275305],[52.48359785340961,27.580849107365495],[51.52076256694742,27.865689602158298],[50.85294803243954,28.814520575469388],[50.115008579311585,30.147772528599717],[49.576850213423995,29.985715236932407],[48.94133344909855,30.317090359004037],[48.567971225789755,29.926778265903522]]]},"bbox":[44.10922529478234,25.0782370061185,63.31663170761959,39.71300263117705]},{"id":"0","type":"Feature","properties":{"name":"Syria","iso":"SYR","ar":"سوريا"},"geometry":{"type":"Polygon","coordinates":[[[35.71991824722275,32.709192409794866],[35.70079796727475,32.71601369885738],[35.836396925608625,32.86812327730851],[35.82110070165024,33.2774264592763],[36.066460402172055,33.82491242119255],[36.61175011571589,34.20178864189718],[36.4481942075121,34.59393524834407],[35.99840254084364,34.644914048800004],[35.905023227692226,35.410009467097325],[36.149762811026534,35.82153473565367],[36.417550083163036,36.04061697035506],[36.6853890317318,36.259699205056464],[36.7394942563414,36.81752045343109],[37.06676110204583,36.62303620050062],[38.1677274920242,36.90121043552777],[38.6998913917659,36.71292735447234],[39.52258019385255,36.71605377862599],[40.67325931169569,37.09127635349729],[41.21208947120305,37.074352321921694],[42.34959109881177,37.2298725449041],[41.83706424334096,36.605853786763575],[41.289707472505455,36.35881460219227],[41.383965285005814,35.628316555314356],[41.006158888519934,34.41937226006212],[38.792340529136084,33.378686428352225],[36.834062127435544,32.312937526980775],[35.71991824722275,32.709192409794866]]]},"bbox":[35.70079796727475,32.312937526980775,42.34959109881177,37.2298725449041]},{"id":"0","type":"Feature","properties":{"name":"Turkey","iso":"TUR","ar":"تركيا"},"geometry":{"type":"MultiPolygon","coordinates":[[[[44.77267710159504,37.17043692561684],[44.29345177590287,37.0015143906063],[43.9422587420473,37.25622752537295],[42.77912560402183,37.385263576805755],[42.34959109881177,37.2298725449041],[41.21208947120305,37.074352321921694],[40.67325931169569,37.09127635349729],[39.52258019385255,36.71605377862599],[38.6998913917659,36.71292735447234],[38.1677274920242,36.90121043552777],[37.06676110204583,36.62303620050062],[36.7394942563414,36.81752045343109],[36.6853890317318,36.259699205056464],[36.417550083163036,36.04061697035506],[36.149762811026534,35.82153473565367],[35.782084995269855,36.27499542901485],[36.160821567537,36.65060557712833],[35.55093631362831,36.565442816711325],[34.714553256984345,36.7955321314909],[34.026894972476384,36.219960028624016],[32.509158156064075,36.107563788389186],[31.699595167779567,36.64427521417258],[30.621624790171097,36.6778648951623],[30.391096225717064,36.26298065850699],[29.69997562024554,36.144357408180994],[28.732902866335422,36.67683136651647],[27.641186557737317,36.65882212986274],[27.048767937943264,37.653360907536],[26.318218214633045,38.208133246405396],[26.804700148228733,38.985760199533516],[26.17078535330433,39.463612168936464],[27.28001997244939,40.42001373957831],[28.81997765474722,40.46001129817221],[29.240003696415584,41.21999074967267],[31.14593387220444,41.08762156835702],[32.34797936374571,41.736264146484615],[33.51328291192746,42.01896006933731],[35.167703891751785,42.040224921225416],[36.9131270688421,41.33535838476427],[38.34766482926452,40.94858612727573],[39.512606642420195,41.10276276301855],[40.373432651538224,41.01367259374735],[41.55408410011066,41.53565623632757],[42.61954878110449,41.58317271581994],[43.58274580259273,41.09214325618257],[43.75265791196841,40.74020091405876],[43.65643639504094,40.253563951166186],[44.4000085792887,40.00500031184228],[44.79398969908195,39.71300263117705],[44.10922529478234,39.4281362981681],[44.421402622257546,38.28128123631454],[44.22575564960053,37.97158437758935],[44.77267,37.17045],[44.77267710159504,37.17043692561684]]],[[[26.1170418637208,41.82690460872456],[27.13573937349048,42.14148489030134],[27.99672041190539,42.00735871028779],[28.115524529744416,41.62288605403624],[28.988442824018733,41.29993419042819],[28.806438429486743,41.05496206314856],[27.61901736828409,40.99982330989314],[27.19237674328238,40.69056570084242],[26.35800906749779,40.151993923496505],[26.04335127127257,40.61775360774317],[26.05694217296534,40.82412344010076],[26.294602085075667,40.93626129817413],[26.60419559093623,41.562114569661105],[26.1170418637208,41.82690460872456]]]]},"bbox":[26.04335127127257,35.82153473565367,44.79398969908195,42.14148489030134]},{"id":"0","type":"Feature","properties":{"name":"Yemen","iso":"YEM","ar":"اليمن"},"geometry":{"type":"Polygon","coordinates":[[[52.00000980002224,19.000003363516058],[52.78218427919205,17.349742336491232],[53.10857262554751,16.651051133688952],[52.38520592632588,16.382411200419654],[52.19172936382509,15.93843313238402],[52.1681649107,15.597420355689948],[51.172515089732485,15.175249742081492],[49.57457645040315,14.708766587782748],[48.67923058451416,14.00320241948566],[48.23894738138742,13.948089504446372],[47.938914015500785,14.007233181204427],[47.354453566279716,13.592219753468383],[46.717076450391744,13.39969920496502],[45.87759280781027,13.347764390511685],[45.62505008319988,13.290946153206763],[45.406458774605255,13.026905422411433],[45.14435591002086,12.95393830001531],[44.989533318874415,12.69958690027471],[44.49457645038285,12.721652736863348],[44.17511274595449,12.585950425664876],[43.48295861183713,12.636800035040084],[43.22287112811213,13.220950425667425],[43.25144819516953,13.767583726450852],[43.08794396339806,14.06263031662131],[42.892245314308724,14.802249253798749],[42.60487267433362,15.213335272680595],[42.80501549660005,15.261962795467255],[42.70243777850066,15.718885809791999],[42.823670688657415,15.911742255105267],[42.77933230975097,16.347891343648683],[43.21837527850275,16.66688996018641],[43.11579756040336,17.088440456607373],[43.380794305196105,17.57998668056767],[43.79151858905192,17.31997671149111],[44.06261315285508,17.410358791569593],[45.21665123879719,17.433328965723334],[45.39999922056876,17.333335069238558],[46.366658563020536,17.233315334537636],[46.74999433776165,17.283338120996177],[47.000004917189756,16.949999294497445],[47.46669477721763,17.116681626854884],[48.18334354024134,18.166669216377315],[49.11667158386487,18.616667588774945],[52.00000980002224,19.000003363516058]]]},"bbox":[42.60487267433362,12.585950425664876,53.10857262554751,19.000003363516058]},{"id":"0","type":"Feature","properties":{"name":"Saudi Arabia","iso":"SAU","ar":"السعودية"},"geometry":{"type":"Polygon","coordinates":[[[34.95603722508426,29.356554673778845],[36.06894087092206,29.197494615184453],[36.50121422704359,29.505253607698705],[36.74052778498725,29.86528331147619],[37.503581984209035,30.003776150018407],[37.66811974462638,30.3386652694859],[37.998848911294374,30.508499864213135],[37.00216556168101,31.508412990844747],[39.00488569515255,32.01021698661498],[39.19546837744497,32.16100881604267],[40.399994337736246,31.889991766887935],[41.889980910007836,31.19000865327837],[44.70949873228474,29.178891099559383],[46.568713413281756,29.09902517345229],[47.45982181172283,29.002519436147224],[47.708850538937384,28.526062730416143],[48.416094191283946,28.55200429942667],[48.80759484232718,27.689627997339883],[49.29955447774583,27.46121816660981],[49.47091352722566,27.109999294538085],[50.15242231629088,26.689663194275997],[50.212935418504685,26.277026882425375],[50.11330325704594,25.94397227630425],[50.239858839728754,25.608049628190926],[50.527386509000735,25.327808335872103],[50.66055667501689,24.999895534764022],[50.81010827006958,24.754742539971378],[51.11241539897702,24.556330878186724],[51.38960778179063,24.62738597258806],[51.57951867046327,24.245497137951105],[51.61770755392698,24.01421926522883],[52.000733270074335,23.00115448657894],[55.006803012924905,22.496947536707136],[55.208341098863194,22.708329982997046],[55.666659376859826,22.00000112557234],[54.99998172386236,19.999994004796108],[52.00000980002224,19.000003363516058],[49.11667158386487,18.616667588774945],[48.18334354024134,18.166669216377315],[47.46669477721763,17.116681626854884],[47.000004917189756,16.949999294497445],[46.74999433776165,17.283338120996177],[46.366658563020536,17.233315334537636],[45.39999922056876,17.333335069238558],[45.21665123879719,17.433328965723334],[44.06261315285508,17.410358791569593],[43.79151858905192,17.31997671149111],[43.380794305196105,17.57998668056767],[43.11579756040336,17.088440456607373],[43.21837527850275,16.66688996018641],[42.77933230975097,16.347891343648683],[42.649572788266084,16.774635321514964],[42.34798912941071,17.075805568912003],[42.270887892431226,17.474721787989125],[41.75438195167396,17.833046169500975],[41.22139122901558,18.67159963630121],[40.93934126156654,19.486485297111756],[40.247652215339826,20.17463450772649],[39.80168460466095,20.338862209550058],[39.139399448408284,21.291904812092934],[39.023695916506796,21.986875311770195],[39.06632897314759,22.57965566659027],[38.49277225114008,23.688451036060854],[38.02386030452362,24.078685614512935],[37.483634881344386,24.285494696545015],[37.154817742671185,24.85848297779731],[37.209491408036,25.084541530858107],[36.93162723160259,25.60295949961018],[36.639603712721225,25.826227525327223],[36.249136590323815,26.57013560638488],[35.64018151219639,27.376520494083422],[35.13018680190788,28.06335195567472],[34.63233605320798,28.058546047471566],[34.787778761541944,28.6074272730597],[34.832220493312946,28.957483425404845],[34.95603722508426,29.356554673778845]]]},"bbox":[34.63233605320798,16.347891343648683,55.666659376859826,32.16100881604267]},{"id":"0","type":"Feature","properties":{"name":"Egypt","iso":"EGY","ar":"مصر"},"geometry":{"type":"Polygon","coordinates":[[[36.86622999999997,22.0],[32.89999999999998,22.0],[29.019999999999982,22.0],[25.0,22.0],[25.0,25.682499996361],[25.0,29.23865452953346],[24.70007,30.044190000000004],[24.957620000000002,30.6616],[24.802869999999984,31.089290000000005],[25.16482,31.56915],[26.49533,31.58568],[27.457620000000002,31.32126],[28.450480000000002,31.025769999999998],[28.913529999999998,30.87005],[29.683419999999998,31.186860000000003],[30.09503,31.4734],[30.976930000000003,31.55586],[31.687960000000004,31.4296],[31.96041,30.933600000000002],[32.19247,31.26034],[32.99392,31.024070000000002],[33.7734,30.967460000000003],[34.26543474464621,31.21935730952032],[34.265440000000005,31.219359999999998],[34.823243288783814,29.76108076171822],[34.9226,29.50133],[34.64174,29.099420000000002],[34.42655,28.343989999999998],[34.15451,27.8233],[33.92136,27.6487],[33.58811,27.97136],[33.13676,28.417650000000002],[32.423230000000004,29.851080000000003],[32.32046,29.76043],[32.73482,28.70523],[33.34876,27.69989],[34.10455,26.14227],[34.473870000000005,25.598560000000003],[34.79507,25.03375],[35.69241,23.92671],[35.49372,23.752370000000003],[35.52598,23.10244],[36.690690000000004,22.20485],[36.86622999999997,22.0]]]},"bbox":[24.70007,22.0,36.86622999999997,31.58568]},{"id":"0","type":"Feature","properties":{"name":"Afghanistan","iso":"AFG","ar":"أفغانستان"},"geometry":{"type":"Polygon","coordinates":[[[61.210817,35.650072],[62.984662,35.404041],[64.546479,36.312073],[65.745631,37.661164],[67.83,37.144994],[69.518785,37.608997],[70.376304,38.138396],[71.348131,38.258905],[72.193041,36.948288],[73.260056,37.495257],[74.980002,37.41999],[75.158028,37.133031],[74.067552,36.836176],[72.920025,36.720007],[71.262348,36.074388],[71.613076,35.153203],[71.115019,34.733126],[70.881803,33.988856],[69.930543,34.02012],[70.323594,33.358533],[69.262522,32.501944],[69.317764,31.901412],[68.556932,31.71331],[67.683394,31.303154],[66.381458,30.738899],[66.346473,29.887943],[65.046862,29.472181],[64.148002,29.340819],[63.550261,29.468331],[62.549857,29.318572],[60.874248,29.829239],[61.699314,31.379506],[60.863655,32.18292],[60.536078,32.981269],[60.9637,33.528832],[60.803193,34.404102],[61.210817,35.650072]]]}},{"id":"0","type":"Feature","properties":{"name":"Pakistan","iso":"PAK","ar":"باكستان"},"geometry":{"type":"Polygon","coordinates":[[[75.15802,37.13303],[76.19284,35.8984],[77.83746,35.49402],[76.87174,34.65355],[74.2402,34.74888],[73.74992,34.31769],[74.1043,33.44146],[75.25864,32.27111],[74.4059,31.69264],[74.42137,30.97982],[73.45067,29.97642],[72.82374,28.96158],[71.77769,27.91318],[70.61647,27.9892],[69.51439,26.94097],[70.16894,26.49188],[70.2829,25.72222],[70.84468,25.2151],[71.04327,24.35653],[68.8426,24.35914],[68.17665,23.69197],[67.44367,23.94485],[67.14544,24.6636],[66.37281,25.42514],[64.53041,25.23704],[62.90572,25.21841],[61.49739,25.07824],[61.87417,26.23997],[63.31665,26.75654],[63.23391,27.21704],[62.75544,27.37893],[62.72782,28.25964],[61.77184,28.69934],[61.36928,29.30327],[60.87425,29.82925],[62.54986,29.31857],[64.14801,29.34081],[65.04687,29.47219],[66.34645,29.88794],[66.38146,30.73891],[66.93889,31.3049],[67.68339,31.30314],[68.55692,31.71332],[68.92665,31.62018],[69.31775,31.9014],[69.26252,32.50193],[69.68714,33.1055],[70.32358,33.35852],[69.93053,34.02012],[70.88181,33.98885],[71.15677,34.34892],[71.11501,34.73311],[71.61308,35.1532],[71.49878,35.65056],[71.26237,36.07438],[71.84628,36.50995],[72.92,36.72],[74.06757,36.83617],[74.5759,37.02084],[75.15802,37.13303]]]}},{"id":"0","type":"Feature","properties":{"name":"Libya","iso":"LBY","ar":"ليبيا"},"geometry":{"type":"Polygon","coordinates":[[[14.8513,22.86295],[13.581425,23.040506],[11.999506,23.471668],[10.771364,24.562532],[9.948261,24.936954],[9.319411,26.094325],[9.716286,26.512206],[9.629056,27.140953],[9.756128,27.688259],[9.683885,28.144174],[9.859998,28.95999],[9.48214,30.307556],[9.970017,30.539325],[10.056575,30.961831],[9.950225,31.37607],[10.636901,31.761421],[11.432253,32.368903],[11.488787,33.136996],[12.66331,32.79278],[13.91868,32.71196],[15.24563,32.26508],[15.71394,31.37626],[16.61162,31.18218],[18.02109,30.76357],[19.08641,30.26639],[19.57404,30.52582],[20.05335,30.98576],[19.82033,31.75179],[20.13397,32.2382],[20.85452,32.7068],[21.54298,32.8432],[22.89576,32.63858],[23.2368,32.19149],[23.60913,32.18726],[23.9275,32.01667],[24.92114,31.89936],[25.16482,31.56915],[24.80287,31.08929],[24.95762,30.6616],[24.70007,30.04419],[25,29.238655],[25,25.6825],[25,22],[23.85,20],[19.84926,21.49509],[15.86085,23.40972],[14.8513,22.86295]]]}}]};
+const MAP_W=1000,MAP_H=650;
+const MAP_BOUNDS={minLon:8,maxLon:79,minLat:12,maxLat:43};
+const COUNTRY_IDS={TUR:0,SYR:1,LBN:2,PSE:3,JOR:4,IRQ:5,IRN:6,KWT:7,SAU:8,BHR:9,QAT:10,ARE:11,OMN:12,YEM:13,EGY:14,ISR:15,AFG:16,PAK:17,LBY:18};
+function projectPoint(lon,lat){
+  const x=(lon-MAP_BOUNDS.minLon)/(MAP_BOUNDS.maxLon-MAP_BOUNDS.minLon)*MAP_W;
+  const rad=Math.max(-85,Math.min(85,lat))*Math.PI/180;
+  const minR=Math.log(Math.tan(Math.PI/4+(MAP_BOUNDS.minLat*Math.PI/180)/2));
+  const maxR=Math.log(Math.tan(Math.PI/4+(MAP_BOUNDS.maxLat*Math.PI/180)/2));
+  const r=Math.log(Math.tan(Math.PI/4+rad/2));
+  const y=MAP_H-(r-minR)/(maxR-minR)*MAP_H;
+  return [x,y];
 }
-function showAccountOnly(){ $('account').classList.remove('hidden');$('lobby').classList.add('hidden');$('game').classList.add('hidden');$('selection').classList.add('hidden');$('finalBattle').classList.add('hidden');}
-function showLoggedIn(){ $('authForms').classList.add('hidden');$('accountLogged').classList.remove('hidden');$('accountName').textContent=currentUser.username;$('lobby').classList.remove('hidden');connectSocket();}
-async function loadProfile(){try{const d=await api('/api/profile');const st=d.stats||{};$('profileStats').innerHTML=[['🎮','المباريات',st.games],['🏆','انتصارات',st.wins],['🥈','الثاني',st.second],['🥉','الثالث',st.third],['💰','إجمالي الصرف',st.totalSpent+' د.ك'],['⭐','متوسط النقاط',st.avgScore]].map(x=>`<div class="profile-stat"><div>${x[0]}</div><b>${x[2]}</b><span>${x[1]}</span></div>`).join('');$('profileResults').innerHTML=d.results?.length?d.results.slice(0,20).map(x=>`<div class="saved-row"><span>${new Date(x.created_at).toLocaleString('ar-KW')} — ${esc(x.category==='celebrities'?'مشاهير':(x.category==='countries'?'دول':'أفلام'))}</span><b>${x.rank===1?'🥇':x.rank===2?'🥈':x.rank===3?'🥉':'#'+x.rank} ${esc(x.item_name)} — ${x.total_score}</b></div>`).join(''):'<div class="muted">لا توجد مباريات محفوظة بعد.</div>';$('profilePanel').classList.remove('hidden')}catch(e){authMessage(e.message)}}
-async function checkSession(){try{const d=await api('/api/auth/me');if(d.ok&&d.user){currentUser=d.user;showLoggedIn();return}}catch(e){}showAccountOnly()}
-$('loginBtn').onclick=async()=>{try{const d=await api('/api/auth/login',{method:'POST',body:JSON.stringify({username:$('loginUser').value.trim(),password:$('loginPass').value})});currentUser=d.user;authMessage('تم تسجيل الدخول ✓',true);showLoggedIn()}catch(e){authMessage(e.message)}};
-$('registerBtn').onclick=async()=>{try{const d=await api('/api/auth/register',{method:'POST',body:JSON.stringify({username:$('regUser').value.trim(),password:$('regPass').value})});currentUser=d.user;authMessage('تم إنشاء الحساب وحفظه ✓',true);showLoggedIn()}catch(e){authMessage(e.message)}};
-$('logoutBtn').onclick=async()=>{await api('/api/auth/logout',{method:'POST'}).catch(()=>{});try{socket?.disconnect()}catch(e){};socket=null;currentUser=null;location.reload()};
-$('profileBtn').onclick=()=>{if($('profilePanel').classList.contains('hidden'))loadProfile();else $('profilePanel').classList.add('hidden')};
-checkSession();
-function show(id){
-  ['lobby','game','selection','finalBattle'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
-  if($('account'))$('account').classList.toggle('hidden',id!=='lobby');
+function ringPath(ring){
+  return ring.map((p,i)=>{const q=projectPoint(p[0],p[1]);return `${i?'L':'M'}${q[0].toFixed(1)} ${q[1].toFixed(1)}`}).join(' ')+' Z';
 }
-function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-$('create').onclick=()=>{if(!socket||!socket.connected){setStatus('السيرفر غير متصل. شغّل START-MAZAD.bat أولًا.');return;}me=currentUser?.username||($('myName').value||'لاعب').trim();socket.emit('createRoom',{name:me,budget:+$('budget').value,playerCount:+$('playerCount').value,rounds:+$('rounds').value,category:$('category').value});};
-$('join').onclick=()=>{if(!socket||!socket.connected){setStatus('السيرفر غير متصل. شغّل START-MAZAD.bat أولًا.');return;}me=currentUser?.username||($('joinName').value||'لاعب').trim();room=$('roomCode').value.trim().toUpperCase();socket.emit('joinRoom',{room,name:me});};
-$('startGame').onclick=()=>socket.emit('startGame',{room});
-$('copyCode').onclick=async()=>{const value=$('code').textContent.trim();try{await navigator.clipboard.writeText(value);$('copyMsg').textContent='تم نسخ الكود ✓';}catch(e){$('shareCode').focus();$('shareCode').select();document.execCommand('copy');$('copyMsg').textContent='تم نسخ الكود ✓';}setTimeout(()=>$('copyMsg').textContent='',1800);};
-function enterRoom(s){state=s;show('lobby');$('lobbyForms').classList.add('hidden');$('roomInfo').classList.remove('hidden');$('code').textContent=room;$('shareCode').value=room;$('playerCountNow').textContent=`${s.players.length} / ${s.players.length?s.players.length:4}`;$('roomPlayers').innerHTML=s.players.map((p,i)=>`<div class="player"><b>${esc(p.name)}</b>${i===0?' 👑 المضيف':''}<br><span class="status in">متصل</span></div>`).join('');$('hostHint').textContent=isHost?'أنت المضيف. أرسل الكود لأصدقائك، ثم اضغط «ابدأ المزاد».':'تم دخول الغرفة. أرسل اسمك وانتظر المضيف لبدء اللعبة.';$('startGame').classList.toggle('hidden',!isHost);}
-function renderState(){
-if(!state)return;
-$('gameCode').textContent=room;
-if(state.phase!=='auction') clearInterval(localTimer);
-if(state.phase==='lobby'){enterRoom(state);return}
-if(state.phase==='auction'){
-  clearInterval(localTimer);
-  $('lobby').classList.add('hidden');
-  $('account').classList.add('hidden');
-  $('game').classList.remove('hidden');
-  $('selection').classList.add('hidden');
-  $('finalBattle').classList.add('hidden');
-  renderAuction();
+function geometryPath(g){
+  if(g.type==='Polygon') return g.coordinates.map(ringPath).join(' ');
+  if(g.type==='MultiPolygon') return g.coordinates.flatMap(poly=>poly.map(ringPath)).join(' ');
+  return '';
 }
-
-else if(state.phase==='selection'){show('selection');renderSelection();}
-else if(state.phase==='final'){show('finalBattle');renderFinal();}
-}
-async function getWikiPoster(title){
-  try{
-    const url='https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(String(title).replace(/ /g,'_'));
-    const r=await fetch(url,{headers:{'Accept':'application/json'}});
-    if(!r.ok) return '';
-    const d=await r.json();
-    return d?.thumbnail?.source || d?.originalimage?.source || '';
-  }catch(e){ return ''; }
-}
-function posterPlaceholder(title){
-  return 'https://placehold.co/500x750/071b17/d8b45a?text='+encodeURIComponent(String(title));
-}
-async function loadPoster(img,f){
-  const fallback=img?.parentElement?.querySelector('.fallback');
-  if(fallback) fallback.style.display='none';
-  let wikiTried=false;
-  const tryWiki=async()=>{
-    if(wikiTried) return false;
-    wikiTried=true;
-    const src=await getWikiPoster(f.name);
-    if(src){img.src=src;img.style.display='block';return true;}
-    return false;
+function centroidOfFeature(f){
+  const pts=[];
+  const collect=v=>{
+    if(Array.isArray(v)){
+      if(v.length && typeof v[0]==='number') pts.push(v);
+      else v.forEach(collect);
+    }
   };
-  img.onerror=async()=>{
-    img.onerror=null;
-    if(!(await tryWiki())) img.src=posterPlaceholder(f.name);
-  };
-  if(f.img){img.src=f.img;return;}
-  if(!(await tryWiki())) img.src=posterPlaceholder(f.name);
-  img.onerror=()=>{
-    img.onerror=null;
-    img.style.display='none';
-    if(fallback) fallback.style.display='flex';
-  };
+  collect(f.geometry.coordinates);
+  if(!pts.length) return projectPoint(0,0);
+  const lon=pts.reduce((a,p)=>a+p[0],0)/pts.length;
+  const lat=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+  return projectPoint(lon,lat);
 }
-function posterHTML(f,cls=''){
-  const extra=f.countryCode?' country-flag':'';
-  const src=f.img||posterPlaceholder(f.name);
-  return `<img class="${cls}${extra}" alt="${esc(f.name)}" src="${src}" onerror="loadPoster(this,${JSON.stringify(f).replace(/</g,'\u003c')})">`;
+function ownerColor(owner){if(!owner)return '#36443a';const p=state?.players?.find(x=>x.id===owner);return p?.color||'#b98a3d'}
+function renderMap(){
+  const el=$('map'); if(!el||!state?.regions)return;
+  const features=REAL_MIDDLE_EAST_GEOJSON.features;
+  const paths=features.map(f=>{
+    const id=COUNTRY_IDS[f.properties.iso]; if(id===undefined)return '';
+    const r=state.regions[id],sel=selectedRegion===id;
+    const [cx,cy]=centroidOfFeature(f);
+    const mine=state.players?.find(x=>x.id===(socket?.id||'demo'))?.id; const mm=r?.militia; const militiaText=(mm&&mm.owner===mine)?`<text x="${cx.toFixed(1)}" y="${(cy+18).toFixed(1)}" class="real-label" text-anchor="middle">${mm.active?'🔥 تمرد':'🕵️ خلية نائمة'} ${mm.count} ميليشيا</text>`:''; return `<path class="real-region${sel?' selected':''}" data-region="${id}" d="${geometryPath(f.geometry)}" fill="${ownerColor(r?.owner)}"><title>${esc(r?.name||f.properties.ar)}</title></path><text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" class="real-label" text-anchor="middle">${esc(r?.name||f.properties.ar)}</text>${militiaText}`;
+  }).join('');
+  // Bahrain is too small to survive Natural Earth low-resolution geometry, so render it as a geographic island marker at its real location.
+  const br=state.regions[9],bsel=selectedRegion===9;
+  const bp=projectPoint(50.55,26.05);
+  const bMil=br?.militia, bMine=state.players?.find(x=>x.id===(socket?.id||'demo'))?.id; const bTag=(bMil&&bMil.owner===bMine)?`<text x="${bp[0]}" y="${bp[1]+50}" class="real-label" text-anchor="middle">${bMil.active?'🔥 تمرد':'🕵️ خلية نائمة'} ${bMil.count}</text>`:''; const bahrain=`<g class="island-region${bsel?' selected':''}" data-region="9"><path d="M ${bp[0]-9} ${bp[1]-13} L ${bp[0]+8} ${bp[1]-7} L ${bp[0]+7} ${bp[1]+9} L ${bp[0]-5} ${bp[1]+14} L ${bp[0]-12} ${bp[1]+2} Z" fill="${ownerColor(br?.owner)}"/><text x="${bp[0]}" y="${bp[1]+34}" class="real-label" text-anchor="middle">البحرين</text>${bTag}</g>`;
+  const seaGrid=[];
+  for(let lon=10;lon<=75;lon+=5){const a=projectPoint(lon,12),b=projectPoint(lon,43);seaGrid.push(`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" class="map-grid"/>`)}
+  for(let lat=15;lat<=40;lat+=5){const a=projectPoint(8,lat),b=projectPoint(79,lat);seaGrid.push(`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" class="map-grid"/>`)}
+  el.innerHTML=`<svg viewBox="0 0 ${MAP_W} ${MAP_H}" class="middleeast-svg" role="img" aria-label="خريطة جغرافية حقيقية للشرق الأوسط"><defs><linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12313a"/><stop offset="1" stop-color="#071519"/></linearGradient><filter id="mapShadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".65"/></filter></defs><rect width="1000" height="650" fill="url(#seaGrad)" rx="24"/>${seaGrid.join('')}<g filter="url(#mapShadow)">${paths}${bahrain}</g><g class="map-water"><text x="155" y="585">البحر الأحمر</text><text x="785" y="405">الخليج العربي</text><text x="915" y="135">بحر قزوين</text></g><g class="compass"><circle cx="930" cy="570" r="27"/><text x="930" y="550">N</text><path d="M930 558 L923 575 L930 570 L937 575 Z"/></g></svg>`;
+  el.querySelectorAll('.real-region').forEach(n=>{n.addEventListener('click',()=>selectRegion(+n.dataset.region));n.addEventListener('mouseenter',()=>n.classList.add('hover'));n.addEventListener('mouseleave',()=>n.classList.remove('hover'))});
+  el.querySelectorAll('.island-region').forEach(n=>{n.addEventListener('click',()=>selectRegion(+n.dataset.region));n.addEventListener('mouseenter',()=>n.classList.add('hover'));n.addEventListener('mouseleave',()=>n.classList.remove('hover'))});
 }
-function renderAuction(){
- const f=state.film;const isCountry=state.category==='countries';$('roundNo').textContent=state.round+' / '+state.rounds;$('itemTitle').textContent=f.name;
- $('tags').innerHTML=`<span class="tag">${f.year}</span><span class="tag">${f.genre}</span>${isCountry?`<span class="tag">${esc(f.region||'دولة')}</span>`:''}`;
- const revealedHere=(revealedItemId===f.id && Number.isFinite(revealedRating));
- $('rarity').innerHTML=revealedHere?`👀 <b>تم كشف التقييم: ${revealedRating.toFixed(1)} / 10</b>`:(isCountry?'🌍 تقييم الدولة مخفي حتى الشراء':`⭐ التقييم مخفي — الندرة: <span class="${f.rarityClass}">${f.rarity}</span>`);
- $('poster').innerHTML=`${posterHTML(f)}<div class="fallback" style="display:none">${esc(f.name)}</div>`;
- const first=$('poster').querySelector('img');
- if(isCountry && f.countryCode){
-   first.classList.add('country-flag');
-   first.onerror=()=>{first.onerror=null;first.style.display='none';const fb=$('poster').querySelector('.fallback');if(fb)fb.style.display='flex';};
-   first.src=f.img;
- }else loadPoster(first,f);
- $('price').textContent=state.phase==='secret'?'مزاد سري':' '+state.highest+' د.ك';
- const ev=state.currentEvent||{name:'جولة عادية',desc:'لا يوجد تأثير خاص.'};
- $('turn').innerHTML=`${state.phase==='secret'?'🔒 مزاد سري — ضع عرضك السري':'دور: '+(state.players[state.current]?.name||'')+(state.players[state.current]?.id===socket.id?' — دورك الآن':' — انتظر دورك')}${state.phase==='auction'&&state.leader>=0?' | أعلى مزايد: '+state.players[state.leader].name+' — '+state.highest+' د.ك':''}`;
- $('phaseLabel').textContent=state.phase==='secret'?'مزاد سري 🔒':'المزاد';
- let evbox=document.getElementById('eventBox'); if(!evbox){evbox=document.createElement('div');evbox.id='eventBox';evbox.className='event-box';$('turn').after(evbox)}
- evbox.innerHTML=`🎲 <b>${esc(ev.name)}</b><br><span>${esc(ev.desc)}</span>`;
- $('players').innerHTML=state.players.map((p,i)=>`<div class="player ${i===state.current?'turn':''} ${i===state.leader?'leader':''} ${!p.active?'out':''}">
- <b>${esc(p.name)}</b><br>المحفظة: ${p.balance} د.ك<br>الأفلام: ${p.films.length}<br>
- <span class="status ${i===state.leader?'lead':p.active?'in':'out'}">${i===state.leader?'أعلى مزايد — ينتظر':p.active?'داخل المزاد':'يستاهل — انسحب'}</span>
- ${p.frozenUntil&&p.frozenUntil>Date.now()?'<br><span class="status out">🛑 مجمّد</span>':''}</div>`).join('');
- $('log').innerHTML=state.history.length?state.history.slice().reverse().map(x=>`<div class="logrow"><span>🎬 ${esc(x.film)}</span><b>${esc(x.player)}</b><span>${x.price} د.ك</span></div>`).join(''):'لا توجد مشتريات بعد.';
- const mine=state.players.find(p=>p.userId===currentUser?.id || p.id===socket?.id); if(!mine)return;
- ['double','freeze','reveal'].forEach(t=>{const el=$(t==='double'?'doubleCount':t==='freeze'?'freezeCount':'revealCount');if(el)el.textContent=mine.cards?.[t]??1});
- const myIdx=state.players.findIndex(p=>p.userId===currentUser?.id || p.id===socket?.id);
- const auctionActive=state.phase==='auction' && !!socket?.connected;
- // السيرفر هو صاحب القرار في الدور؛ لا نعطّل أزرار المزايدة محليًا بسبب socket.id.
- document.querySelectorAll('[data-inc],#customBtn,#worth').forEach(b=>b.disabled=!auctionActive);
- $('cardDouble').disabled=!(auctionActive&&mine.cards?.double>0);
- $('cardReveal').disabled=!(auctionActive&&mine.cards?.reveal>0);
- $('cardFreeze').disabled=!(auctionActive&&mine.cards?.freeze>0&&state.players.some((p,i)=>i!==myIdx&&p.active));
- if(state.phase==='secret') document.querySelectorAll('[data-inc],#customBtn,#worth,#cardDouble,#cardFreeze,#cardReveal').forEach(b=>b.disabled=true);
- startCountdown();
+function selectRegion(id){
+ if(supportSource!==null && supportSource!==undefined){
+   const mine=socket?.id||'demo', target=state.regions[id], src=state.regions[supportSource];
+   if(target?.owner && target.owner!==mine){
+     const myDip=state.myDiplomacy?.find(x=>x.id===mine), rel=myDip?.relations?.[target.owner];
+     if(rel==='alliance'){
+       const kind=window.prompt('إسناد ماذا؟ اكتب: جيش أو دفاع','جيش');
+       if(kind==='جيش'||kind==='دفاع'){
+         const amount=window.prompt(`كم تريد إرسال؟ الحد الأقصى ${kind==='جيش'?Math.floor(src.army/2):Math.floor(src.defense/2)}`,'50');
+         if(amount)sendAction('support',supportSource,id,amount,kind==='جيش'?'army':'defense');
+         supportSource=null;selectedRegion=id;renderMap();renderPanels(false);return;
+       }
+       toast('اكتب جيش أو دفاع.');return;
+     }
+   }
+   toast('اختر دولة يملكها حليفك.');return;
+ }
+ if(withdrawSource!==null && withdrawSource!==undefined){
+   const src=state.regions[withdrawSource], dest=state.regions[id], mine=(socket?.id||'demo');
+   if(dest?.owner===mine && id!==withdrawSource){sendAction('withdraw',withdrawSource,id);withdrawSource=null;selectedRegion=id;renderMap();renderPanels(false);return}
+   if(id===withdrawSource){toast('اختر دولة أخرى تملكها لنقل الجيش إليها.');return}
+   toast('أثناء نقل الجيش يجب اختيار دولة تملكها أنت.');return;
+ }
+ selectedRegion=id;renderMap();renderPanels(false);let r=state.regions[id];if(r)toast(`${r.name} — ${r.owner?ownerName(r.owner):'دولة محايدة'}`)
 }
-function startCountdown(){clearInterval(localTimer);let end=state.phase==='secret'?state.secretEndsAt:state.turnEndsAt;if(!end)return;function tick(){const left=Math.max(0,Math.ceil((end-Date.now())/1000));$('timer').textContent=left;if(left<=0)clearInterval(localTimer)}tick();localTimer=setInterval(tick,250)}
-function bid(v){
- if(!socket||!socket.connected){setStatus('لا يوجد اتصال بالسيرفر. أعد تحميل الصفحة.');return;}
- if(!state||state.phase!=='auction'){setStatus('المزاد غير نشط الآن.');return;}
- const value=Number(v);
- if(!Number.isInteger(value)||value<10||value>500||value%10!==0){setStatus('المزايدة يجب أن تكون من 10 إلى 500 وبمضاعفات 10.');return;}
- setStatus('جاري إرسال المزايدة…');
- socket.emit('bid',{room,value});
+function ownerName(id){return state.players?.find(p=>p.id===id)?.name||'مملكة'}
+function isAdjacentOwned(id,ownerId){if(!state?.regions||!ownerId)return false;return state.regions.some(x=>x.owner===ownerId&&window.ADJ_CLIENT?.[x.id]?.includes(id))||false}
+window.ADJ_CLIENT={0:[1,5,6],1:[0,2,3,4,5,15],2:[1,3,15],3:[1,2,4,14,15],4:[1,3,5,8,15],5:[0,1,4,6,7,8],6:[0,5,7,11],7:[5,8,9],8:[4,5,7,9,10,11,12,13],9:[7,10,8],10:[9,8,11],11:[6,8,10,12],12:[8,11,13],13:[8,12,14],14:[3,13,15],15:[1,2,3,4,14]};
+function renderPanels(demo){
+ let me=state.players?.find(p=>p.id===(socket?.id||'demo'))||state.players?.[0];
+ const mine=me?.id;
+ $('roundTxt').textContent=`الجولة ${state.round||1} / ${state.maxRounds||20}`;
+ $('turnTxt').textContent=state.turnPlayer===(socket?.id||'demo')?`🔥 دورك الآن — بقيت ${state.actionsLeft||0} حركات`:`دور ${ownerName(state.turnPlayer)}`;
+ $('myStats').innerHTML=[['💰','ذهب',me?.gold||0],['⚔️','جيش',me?.army||0],['🏰','دول',me?.territories?.length??state.regions.filter(r=>r.owner===mine).length],['🏆','نقاط',Math.round(me?.score||0)],['🎯','حركات',state.actionsLeft||0],['👑','الهدف','أكثر دول']].map(x=>`<div class="stat"><div>${x[0]}</div><b>${x[2]}</b><span>${x[1]}</span></div>`).join('');
+ let rr=state.regions[selectedRegion];
+ if(!rr){$('selectedInfo').innerHTML='<b>ابدأ من هنا 👇</b><br>اضغط على دولة تملكها. بعدها اضغط على دولة مجاورة إذا أردت احتلالها.'}
+ else {
+   const owned=rr.owner===mine; const mm=rr.militia; const mineMilitia=mm&&mm.owner===mine; const enemyMilitia=mm&&mm.owner!==mine;
+   $('selectedInfo').innerHTML=`<b style="font-size:20px;color:var(--gold2)">${esc(rr.name)}</b><br>👑 المالك: <strong>${rr.owner?esc(ownerName(rr.owner)):'محايدة'}</strong><br>🏛️ العاصمة: ${esc(rr.capital||'—')}<br>⚔️ الجيش: ${rr.army}<br>🛡️ الدفاع: ${rr.defense}<br>💰 الدخل: ${rr.income}${mineMilitia?`<br>🕵️ ${mm.active?'🔥 تمرد نشط':'خلية نائمة'}: <strong>${mm.count} ميليشيا</strong>`:''}${enemyMilitia&&mm.active?'<br>⚠️ توجد اضطرابات أمنية في هذه الدولة.':''}<br><span class="hint">${owned?(withdrawSource===rr.id?'🔄 اختر الآن دولة أخرى تملكها لنقل كل الجيش إليها.':'هذه دولتك. يمكنك تجنيد أو تحصين أو تطوير أو سحب جيشها لدولة أخرى لك.'):'إذا كانت مجاورة لك، يمكنك احتلالها أو استخدام الاستخبارات.'}</span>`;
+ }
+ const myTurn=demo||state.turnPlayer===socket?.id;
+ const canOwn=rr?.owner===mine;
+ const acts=[];
+ if(canOwn){acts.push(['recruit','🪖 تجنيد +50']);acts.push(['fortify','🛡️ تحصين +25']);acts.push(['build','🏗️ تطوير +15 دخل']); if(rr.army>0) acts.push(['withdraw','🔄 سحب الجيش']); if(state.players.some(x=>x.id!==mine&&x.alive&&(state.myDiplomacy?.find(d=>d.id===mine)?.relations?.[x.id]==='alliance'))) acts.push(['support','🤝 إسناد حليف'])}
+ if(rr && rr.owner!==mine){acts.push(['attack','⚔️ احتلال الدولة']); if(rr.owner&&isAdjacentOwned(rr.id,mine)) acts.push(['plantMilitia','🕵️ زرع 10 ميليشيات']); if(rr.owner&&isAdjacentOwned(rr.id,mine)) acts.push(['intelligence','🔍 الاستخبارات']); if(rr.militia?.owner===mine&&!rr.militia.active) acts.push(['revolt','🔥 تمرد']); if(rr.securityReady) acts.push(['securityIntervention','🚨 تدخل أمن الدولة']);}
+ acts.push(['end','⏭️ إنهاء الدور']);
+ $('actions').innerHTML=acts.map(a=>`<button class="${a[0]==='attack'?'primary':''}" ${!myTurn?'disabled':''} onclick="doAction('${a[0]}')">${a[1]}</button>`).join('');
+ $('players').innerHTML=state.players.map(p=>{const rel=state.myDiplomacy?.find(d=>d.id===mine)?.relations?.[p.id]||'self';let btn='';if(p.id!==mine&&p.alive){if(rel==='none')btn=`<div class="row" style="margin-top:7px;flex-wrap:wrap"><button onclick="sendDiplomacy('${p.id}','truce')">🕊️ هدنة</button><button onclick="sendDiplomacy('${p.id}','alliance')">🤝 تحالف</button></div>`;else if(rel==='alliance')btn='<div class="mini">🤝 حليف — يمكنك إسناده</div>';else if(rel==='truce')btn='<div class="mini">🕊️ هدنة نشطة</div>';else if(rel==='war')btn='<div class="mini" style="color:#e98b8b">⚔️ حرب أبدية</div>'}return `<div class="player ${p.id===mine?'me':''} ${!p.alive?'dead':''}"><b>${esc(p.name)}</b> ${p.id===state.turnPlayer?'🔥':''}<div class="mini">💰 ${p.gold} · ⚔️ ${p.army} · 🗺️ ${state.regions.filter(r=>r.owner===p.id).length} دول</div>${btn}</div>`}).join('');
+ const md=state.myDiplomacy?.find(x=>x.id===mine);let dhtml='';(md?.pending||[]).forEach(q=>{const from=ownerName(q.from);dhtml+=`<div class="targetbox" style="margin-bottom:7px"><b>📨 ${esc(from)}</b> طلب ${q.type==='alliance'?'🤝 تحالف':'🕊️ هدنة'}<div class="row" style="margin-top:7px;flex-wrap:wrap"><button class="primary" onclick="respondDiplomacy(${q.id},'accept')">قبول</button><button onclick="respondDiplomacy(${q.id},'reject')">رفض</button><button class="danger" onclick="respondDiplomacy(${q.id},'kill')">☠️ قتل الرسول</button></div></div>`});$('diplomacy').innerHTML=dhtml||'<span class="hint">لا توجد طلبات معلقة. يمكنك إرسال هدنة أو تحالف من قائمة الممالك.</span>';$('log').innerHTML=(state.log||[]).map(x=>`<div>• ${esc(x)}</div>`).join('');$('log').scrollTop=$('log').scrollHeight;
+ $('legend').innerHTML=state.players.map(p=>`<span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${p.color};margin-left:5px"></i>${esc(p.name)}</span>`).join('')+'<span>⚪ محايد</span>';
 }
-function withdraw(){if(!socket||!socket.connected){setStatus('لا يوجد اتصال بالسيرفر.');return;}setStatus('جاري الانسحاب…');socket.emit('withdraw',{room});}
-function bindAuctionControls(){
- document.querySelectorAll('[data-inc]').forEach(b=>{b.onclick=()=>bid(+b.dataset.inc)});
- const cb=$('customBtn');if(cb)cb.onclick=()=>{const v=+$('custom').value;if(!Number.isInteger(v)||v<10||v>500||v%10!==0){setStatus('اكتب رقمًا من 10 إلى 500 ومن مضاعفات 10.');return}bid(v);$('custom').value=''};
- const wb=$('worth');if(wb)wb.onclick=withdraw;
+function chooseTarget(action){if(!state)return;if(selectedRegion===null||selectedRegion===undefined)return toast('اضغط على دولة أولاً');sendAction(action,selectedRegion)}
+function sendAction(type,target,destination,amount,supportType){if(!socket)return toast('هذه معاينة فقط');socket.emit('action',{code,type,targetId:target,destinationId:destination,amount,supportType},r=>{if(r?.message)toast(r.message);renderPanels(false)})}
+function sendDiplomacy(toId,type){if(!socket)return toast('هذه معاينة فقط');socket.emit('diplomacyRequest',{code,toId,type},r=>{if(r?.message)toast(r.message);renderPanels(false)})}
+function respondDiplomacy(requestId,choice){if(!socket)return;socket.emit('diplomacyResponse',{code,requestId,choice},r=>{if(r?.message)toast(r.message);renderPanels(false)})}
+function doAction(type){
+ if(type==='end')return sendAction('end');
+ if(type==='support'){
+   if(selectedRegion===null||selectedRegion===undefined)return toast('اختر دولة تملكها كمصدر للإسناد أولاً');
+   const src=state.regions[selectedRegion], mine=socket?.id||'demo';
+   if(src?.owner!==mine)return toast('اختر دولة تملكها.');
+   supportSource=selectedRegion;toast('🤝 اختر الآن دولة حليفة لإرسال الإسناد إليها.');renderPanels(false);return;
+ }
+ if(['plantMilitia','revolt','intelligence','securityIntervention'].includes(type)){return chooseTarget(type)}
+ if(type==='withdraw'){
+   if(selectedRegion===null||selectedRegion===undefined)return toast('اضغط على الدولة التي تريد سحب جيشها أولاً');
+   const src=state.regions[selectedRegion], mine=socket?.id||'demo';
+   if(src?.owner!==mine)return toast('اختر دولة تملكها.');
+   if(!src.army)return toast('هذه الدولة لا تملك جيشًا.');
+   withdrawSource=selectedRegion;toast('🔄 اختر الآن أي دولة تملكها لنقل كل الجيش إليها.');renderPanels(false);return;
+ }
+ if(['build','fortify','attack'].includes(type))return chooseTarget(type);sendAction(type)
 }
-bindAuctionControls();
-$('cardDouble').onclick=()=>socket.emit('useCard',{room,type:'double'});
-$('cardReveal').onclick=()=>socket.emit('useCard',{room,type:'reveal'});
-$('cardFreeze').onclick=()=>{const myIdx=state.players.findIndex(x=>String(x.userId)===String(currentUser?.id)||x.id===socket?.id);const names=state.players.map((p,i)=>i!==myIdx&&p.active?`${i+1}. ${p.name}`:null).filter(Boolean).join('\n');const pick=prompt('اختر رقم اللاعب الذي تريد تجميده لمدة 10 ثوانٍ:\n'+names);const idx=Number(pick)-1;if(Number.isInteger(idx))socket.emit('useCard',{room,type:'freeze',target:idx});};
-function renderSelection(){
-  const uid=String(currentUser?.id||'');
-  const p=state.players.find(x=>String(x.userId)===uid)||state.players.find(x=>x.id===socket?.id);
-  const myTurn=(String(state.selectionTurnUserId||'')===uid) || (!state.selectionTurnUserId && String(state.selectionTurnId||'')===String(socket?.id||''));
-  const isCountry=state.category==='countries';
-  $('phaseLabel').textContent='اختيار المواجهة';
-  $('selectionPlayer').textContent=myTurn?'دورك — اختر عنصرًا واحدًا فقط':'انتظر دورك لاختيار المواجهة';
-  if(p&&!p.selectedFilmId){
-    $('selectionMovies').innerHTML=p.films.map((f,i)=>{
-      const details=isCountry?`<div class="country-mini"><span>💰 ${f.economy}</span><span>✈️ ${f.tourism}</span><span>🛡️ ${f.safety}</span><span>🏗️ ${f.infrastructure}</span><span>🏥 ${f.qualityOfLife}</span><span>🏛️ ${f.culture}</span><span>🌳 ${f.nature}</span><span>🎭 ${f.entertainment}</span><b>⭐ ${f.totalScore}/100</b></div>`:`⭐ ${f.rating}/10`;
-      return `<div class="mini"><img class="${f.countryCode?'country-flag':''}" alt="${esc(f.name)}" src="${f.img||posterPlaceholder(f.name)}"><div><b>${esc(f.name)}</b><br>${details}<br><span class="muted">اشتريته بـ ${f.price} د.ك</span><button type="button" class="pick-btn" data-pick="${i}" ${myTurn?'':'disabled'}>اختيار هذا العنصر</button></div></div>`;
-    }).join('');
-    p.films.forEach((f,i)=>{const img=$('selectionMovies').querySelectorAll('img')[i];if(img){if(f.countryCode){img.classList.add('country-flag');}else loadPoster(img,f);}});
-    document.querySelectorAll('[data-pick]').forEach(b=>{
-      b.onclick=async()=>{
-        if(b.disabled)return;
-        const idx=Number(b.dataset.pick);b.disabled=true;b.textContent='جاري الاختيار…';setStatus('جاري حفظ اختيارك…');
-        document.querySelectorAll('[data-pick]').forEach(x=>x.disabled=true);
-        try{
-          const res=await api('/api/game/select-film',{method:'POST',body:JSON.stringify({room,index:idx})});
-          if(!res?.ok)throw new Error(res?.error||'تعذر حفظ الاختيار.');
-          setStatus('تم اختيار العنصر ✓',true);
-          if(res.finished){return;}
-          await new Promise(r=>setTimeout(r,150));
-          if(socket?.connected)socket.emit('requestState',{room});
-          else renderSelection();
-        }catch(e){
-          setStatus(e.message||'تعذر الاختيار. حاول مرة أخرى.');
-          document.querySelectorAll('[data-pick]').forEach(x=>x.disabled=false);
-          b.textContent='اختيار هذا العنصر';
-        }
-      };
-    });
-  }else if(p&&p.selectedFilmId){
-    $('selectionMovies').innerHTML='<p class="muted">تم اختيار عنصرك ✓ انتظر بقية اللاعبين...</p>';
-  }else{
-    $('selectionMovies').innerHTML='<p class="muted">تعذر العثور على لاعبك. أعد تحميل الصفحة.</p>';
-  }
-  $('selectionWait').textContent=`اختيارات مكتملة: ${state.players.filter(p=>p.selectedFilmId).length} / ${state.players.length}`;
-}
-function renderFinal(){saveFinalResults();renderSavedResults();
-const ranked=state.finalRanked||[];
-$('battleCards').innerHTML=ranked.map((x,i)=>`
-<div class="battle-card">
-  <img class="battle-poster ${x.film.countryCode?'country-flag':''}" alt="${esc(x.film.name)}" src="${x.film.img||posterPlaceholder(x.film.name)}">
-  <div class="battle-fallback" style="display:none">${esc(x.film.name)}</div>
-  <div class="battle-body">
-    <h2>${i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':''}${esc(x.player)}</h2>
-    <h3>🎬 ${esc(x.film.name)}</h3>
-    <div class="scoreline"><span>🌍 الشهرة</span><b>${x.fame}/100</b></div>
-    <div class="scoreline"><span>⭐ التقييم</span><b>${x.film.rating}/10</b></div>
-    <div class="scoreline"><span>🏆 الجوائز والترشيحات</span><b>${x.awards}</b></div>
-    <div class="total-score">${x.total.toFixed(1)} نقطة</div>
-  </div>
-</div>`).join('');
-
-ranked.forEach((x,i)=>{
-  const img=$('battleCards').querySelectorAll('.battle-poster')[i];
-  if(img){
-    img.style.display='block';
-    if(x.film.countryCode){img.classList.add('country-flag');}else loadPoster(img,x.film);
-  }
-});
-
-if(ranked[0]) $('champion').innerHTML=`
-🏆 الفائز بالمواجهة الأخيرة
-<br><span style="font-size:22px">${esc(ranked[0].player)} — ${esc(ranked[0].film.name)}</span>
-<div class="formula">النتيجة النهائية: <b>${ranked[0].total.toFixed(1)}</b> نقطة</div>`;
-
-const rows=ranked.map((x,i)=>`
-<tr><td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
-<td><b>${esc(x.player)}</b></td><td>${esc(x.film.name)}</td>
-<td><b>${x.total.toFixed(1)}</b></td></tr>`).join('');
-$('battleDetails').innerHTML=`
-<h2 style="margin-top:18px">📊 الترتيب النهائي</h2>
-<div class="final-table"><table><tr><th>المركز</th><th>اللاعب</th><th>الفيلم</th><th>النقاط</th></tr>${rows}</table></div>`;
-
-const allFilms=[];
-(state.players||[]).forEach(p=>(p.films||[]).forEach(f=>allFilms.push({...f,player:p.name,bids:p.bids||0})));
-
-let best=null,worst=null,smart=null,spender=null,active=null;
-for(const f of allFilms){
-  if(best===null||f.saving>best.saving)best=f;
-  if(worst===null||f.saving<worst.saving)worst=f;
-  const ratio=f.price>0?(f.value/f.price):0;
-  if(smart===null||ratio>smart.ratio)smart={...f,ratio};
-}
-for(const p of (state.players||[])){
-  if(spender===null||p.spent>spender.spent)spender=p;
-}
-const activePlayers=(state.players||[]).filter(p=>p.active!==false);
-if(activePlayers.length) active=activePlayers[0];
-}
-</script>
-<script>
-/* Cinematic UI micro-effects — visual only, no game logic changes */
-document.addEventListener('click', function(e){
-  const b=e.target.closest('button');
-  if(!b || b.disabled) return;
-  b.animate([
-    {boxShadow:'0 0 0 0 rgba(216,180,90,.45)'},
-    {boxShadow:'0 0 0 12px rgba(216,180,90,0)'}
-  ],{duration:420,easing:'ease-out'});
-});
-
-async function saveFinalResults(){
-  if(!state?.finalRanked?.length)return;
-  // النتائج الأساسية تُحفظ تلقائيًا على الخادم عند انتهاء المواجهة.
-  if(currentUser){
-    try{const d=await api('/api/profile');window._mazadProfileResults=d.results||[];renderSavedResults();}catch(e){}
-  }
-}
-function renderSavedResults(){
-  const box=$('savedResults');if(!box)return;
-  const all=window._mazadProfileResults||[];
-  box.innerHTML='<div class="saved-results"><h3>☁️ نتائجي المحفوظة في حسابي</h3>'+
-  (all.length?all.slice(0,10).map((g,i)=>`<div class="saved-row"><span>${new Date(g.created_at).toLocaleString('ar-KW')} — ${esc(g.category==='celebrities'?'مشاهير':(category==='countries'?'دول':'أفلام'))}</span><b>${g.rank===1?'🥇':g.rank===2?'🥈':g.rank===3?'🥉':'#'+g.rank} ${esc(g.item_name)} (${g.total_score})</b></div>`).join(''):'<div class="muted">سيظهر سجل مبارياتك هنا بعد انتهاء المباراة.</div>')+'</div>';
-}
-$('homeBtn').onclick=goHome;
-$('clearScoresBtn').onclick=()=>{localStorage.removeItem('mazadResults_v1');renderSavedResults();};
-</script>
-
-
-<style id="mazad-contrast-fix">
-/* Final contrast fix — keep the cinematic dark-green/gold theme */
-html,body{background:#020907!important;color:#f7f2e7!important}
-body{background:
- radial-gradient(circle at 50% -10%,rgba(216,180,90,.20),transparent 32%),
- radial-gradient(circle at 0% 35%,rgba(15,91,67,.22),transparent 30%),
- radial-gradient(circle at 100% 60%,rgba(15,91,67,.18),transparent 28%),
- linear-gradient(135deg,#020907,#071b17 48%,#020907)!important;}
-.card{background:linear-gradient(145deg,rgba(11,37,31,.96),rgba(4,19,16,.94))!important;color:#f7f2e7!important}
-.battle-card,.player,.stat,.award,.metric,.mini{background:rgba(7,25,21,.92)!important;color:#f7f2e7!important;border-color:rgba(216,180,90,.22)!important}
-.battle-body,.battle-body *{color:#f7f2e7!important}
-.scoreline{border-bottom-color:rgba(216,180,90,.22)!important}
-.total-score{color:#f0d98b!important}
-.champion{background:linear-gradient(135deg,#0d3028,#061713)!important;border:2px solid #d8b45a!important;color:#fff!important;box-shadow:0 0 35px rgba(216,180,90,.14)!important}
-.champion *{color:#fff!important}
-.champion strong,.champion b{color:#f0d98b!important}
-#battleDetails{color:#f7f2e7!important}
-#battleDetails *{color:#f7f2e7!important}
-#battleDetails .total-score,#battleDetails strong,#battleDetails b{color:#f0d98b!important}
-.final-table th,.final-table td{color:#f7f2e7!important;border-bottom-color:rgba(216,180,90,.22)!important}
-.muted{color:#b9b5aa!important}
-.formula{background:rgba(216,180,90,.08)!important;color:#f7f2e7!important;border:1px solid rgba(216,180,90,.18)!important}
-
-.battle-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#071b17;border-bottom:1px solid rgba(216,180,90,.22)}
-.mini img{width:110px;height:165px;object-fit:cover;border-radius:12px;background:#071b17;flex:none}
-.poster img{display:block}
-</style>
-</body></html>
+function finish(s){$('home').classList.add('hidden');$('lobby').classList.add('hidden');$('game').classList.add('hidden');$('finish').classList.remove('hidden');$('results').innerHTML=s.players.map((p,i)=>`<div class="rank ${i===0?'first':''}"><b>${['🥇','🥈','🥉'][i]||'🏅'} ${esc(p.name)}</b><br><span class="mini">🏆 ${Math.round(p.score)} نقطة · 💰 ${p.gold} · ⚔️ ${p.army} · 🗺️ ${s.regions.filter(r=>r.owner===p.id).length} أقاليم</span></div>`).join('')}
+</script></body></html>
