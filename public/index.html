@@ -388,7 +388,7 @@ const celebrities = [
 ];
 let socket=null;
 const $=id=>document.getElementById(id);
-let room='',me='',isHost=false,state=null,localTimer=null,currentUser=null;
+let room='',me='',isHost=false,state=null,localTimer=null,currentUser=null,revealedItemId=null,revealedRating=null;
 function setStatus(msg,good=false){ if($('status')){$('status').textContent=msg;$('status').style.color=good?'#357a55':'#a94d43';} }
 function authMessage(msg,good=false){$('authMsg').textContent=msg;$('authMsg').style.color=good?'#357a55':'#a94d43';}
 async function api(url,options={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||'حدث خطأ.');return d}
@@ -405,7 +405,9 @@ function connectSocket(){
  socket.on('roomCreated',d=>{room=d.room;isHost=true;enterRoom(d.state);});
  socket.on('joined',d=>{room=d.room;isHost=false;enterRoom(d.state);});
  socket.on('errorMsg',m=>setStatus(m));
- socket.on('state',s=>{state=s;if(s&&s.phase==='auction')clearInterval(localTimer);renderState();});
+ socket.on('cardUsed',d=>setStatus(d?.message||'تم استخدام البطاقة ✓',true));
+ socket.on('cardRevealResult',d=>{revealedItemId=d?.itemId||null;revealedRating=Number(d?.rating);setStatus(`👀 تم كشف تقييم ${d?.name||'العنصر'}: ${Number.isFinite(revealedRating)?revealedRating.toFixed(1):d?.rating}/10`,true);renderAuction();});
+ socket.on('state',s=>{if(s?.film?.id!==revealedItemId){revealedItemId=null;revealedRating=null;}state=s;if(s&&s.phase==='auction')clearInterval(localTimer);renderState();});
  socket.on('roundStarted',d=>{clearInterval(localTimer);show('game');if(state){state.phase='auction';state.turnEndsAt=d.turnEndsAt;renderAuction();}});
  socket.on('disconnectedPlayer',name=>alert(name+' خرج من الغرفة.'));
 }
@@ -489,7 +491,8 @@ function posterHTML(f,cls=''){
 function renderAuction(){
  const f=state.film;const isCountry=state.category==='countries';$('roundNo').textContent=state.round+' / '+state.rounds;$('itemTitle').textContent=f.name;
  $('tags').innerHTML=`<span class="tag">${f.year}</span><span class="tag">${f.genre}</span>${isCountry?`<span class="tag">${esc(f.region||'دولة')}</span>`:''}`;
- $('rarity').innerHTML=isCountry?'🌍 تقييم الدولة مخفي حتى الشراء':`الندرة: <span class="${f.rarityClass}">${f.rarity}</span>`;
+ const revealedHere=(revealedItemId===f.id && Number.isFinite(revealedRating));
+ $('rarity').innerHTML=revealedHere?`👀 <b>تم كشف التقييم: ${revealedRating.toFixed(1)} / 10</b>`:(isCountry?'🌍 تقييم الدولة مخفي حتى الشراء':`⭐ التقييم مخفي — الندرة: <span class="${f.rarityClass}">${f.rarity}</span>`);
  $('poster').innerHTML=`${posterHTML(f)}<div class="fallback" style="display:none">${esc(f.name)}</div>`;
  const first=$('poster').querySelector('img');
  if(isCountry && f.countryCode){
@@ -538,7 +541,7 @@ function bindAuctionControls(){
 bindAuctionControls();
 $('cardDouble').onclick=()=>socket.emit('useCard',{room,type:'double'});
 $('cardReveal').onclick=()=>socket.emit('useCard',{room,type:'reveal'});
-$('cardFreeze').onclick=()=>{const names=state.players.map((p,i)=>`${i===state.players.findIndex(x=>x.name===currentUser?.username)?'':i+1+'. '+p.name}`).filter(Boolean).join('\n');const pick=prompt('اكتب رقم اللاعب الذي تريد تجميده:\n'+names);const idx=Number(pick)-1;if(Number.isInteger(idx))socket.emit('useCard',{room,type:'freeze',target:idx});};
+$('cardFreeze').onclick=()=>{const myIdx=state.players.findIndex(x=>String(x.userId)===String(currentUser?.id)||x.id===socket?.id);const names=state.players.map((p,i)=>i!==myIdx&&p.active?`${i+1}. ${p.name}`:null).filter(Boolean).join('\n');const pick=prompt('اختر رقم اللاعب الذي تريد تجميده لمدة 10 ثوانٍ:\n'+names);const idx=Number(pick)-1;if(Number.isInteger(idx))socket.emit('useCard',{room,type:'freeze',target:idx});};
 function renderSelection(){
   const uid=String(currentUser?.id||'');
   const p=state.players.find(x=>String(x.userId)===uid)||state.players.find(x=>x.id===socket?.id);
